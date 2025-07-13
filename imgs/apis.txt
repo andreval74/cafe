@@ -1,3 +1,4 @@
+deve fazer estas alterações
 - aumentar o numero de tentativas para 100 000 000
 - colocar versão
 - layout cafe
