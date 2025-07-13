@@ -1,0 +1,608 @@
+:root {
+  /* Cores */
+  --color-black: #121212;
+  --color-mustard: #FFD447;
+  --color-gray: #2E2E2E;
+  --color-gray-light: #B0B0B0;
+  --color-red: #E53935;
+  --color-filled-bg: #232323;
+  --color-button-gradient-start: #ffec64;
+  --color-button-gradient-end: #ffab23;
+  --color-button-border: #ffaa22;
+  --color-button-text: #333333;
+  --color-button-text-shadow: #ffee66;
+  --color-placeholder: #7a7a7a;
+  --color-error-bg: #2E1818;
+  --color-helper-text: #aaa;
+  --color-disabled-bg: #191919;
+  --color-disabled-text: #555;
+  --color-disabled-border: #333;
+  --color-flatpickr-bg: #222a31;
+  --color-flatpickr-day-hover: #FFD447aa;
+  --color-border-strong: #FFD44755; /* Definida para consistência */
+
+  /* Fontes */
+  --font-family-primary: 'Montserrat', 'Exo 2', 'Quicksand', Arial, sans-serif;
+  --font-family-title: 'Orbitron', 'Rajdhani', 'Exo 2', Arial, sans-serif;
+  --font-size-base: 12px;
+  --font-size-label: 12px;
+  --font-size-h1: 18px;
+  --font-size-button: 15px;
+  --font-size-error: 10px;
+  --font-size-helper: 10px;
+  --font-size-file-filename: 9.5px;
+  --font-size-flatpickr-month-select: 11px;
+  --font-weight-bold: 700;
+  --font-weight-regular: 400;
+  --letter-spacing-base: 0.04em;
+  --letter-spacing-title: 0.09em;
+  --letter-spacing-error: 0.03em;
+  --line-height-base: 1.6;
+
+  /* Espaçamentos e Dimensões */
+  --spacing-xxs: 3px;
+  --spacing-xs: 2px;
+  --spacing-sm: 6px;
+  --spacing-md: 8px;
+  --spacing-lg: 10px;
+  --spacing-xl: 12px;
+  --spacing-xxl: 10px;
+  --spacing-xxxl: 6px;
+  --spacing-button-group-gap: 12px;
+  --spacing-form-padding-v: 27px;
+  --spacing-form-padding-h: 30px;
+  --spacing-form-margin-v: 30px;
+  --spacing-fieldset-margin-bottom: 22.5px;
+  --spacing-legend-margin-bottom: 15px;
+  --spacing-input-padding-v: 6px;
+  --spacing-input-padding-h: 10px;
+  --min-height-input: 30px;
+  --min-height-textarea: 72px;
+  --button-padding-v: 6px;
+  --button-padding-h: 24px;
+  --switch-width: 48px;
+  --switch-height: 28px;
+  --switch-slider-height: 22px;
+  --switch-slider-width: 22px;
+  --color-input-width: 50px;
+  --color-input-height: 34px;
+  --progress-meter-height: 16px;
+  --file-upload-input-height: 48px;
+  --file-upload-label-icon-margin: 16px;
+  --flatpickr-calendar-gap: 12px;
+  --flatpickr-month-select-padding-v-top: 8px;
+  --flatpickr-month-select-padding-v-bottom: 18px;
+  --flatpickr-month-select-padding-h: 6px;
+  --flatpickr-month-select-min-width: 64px;
+
+  /* Bordas e Arredondamentos */
+  --border-width-xs: 1px;
+  --border-width-sm: 1.5px;
+  --border-radius-xs: 6px;
+  --border-radius-sm: 8px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 18px;
+  --border-radius-xl: 28px;
+
+  /* Sombras */
+  --shadow-input-focus: 0 2px 18px 0 #FFD44755;
+  --shadow-form: 0 4px 40px #FFD44711;
+  --shadow-error: 0 2px 12px 0 #E5393544;
+  --shadow-checkbox-radio: 0 0 5px #FFD44788;
+  --shadow-slider: 0 0 6px #FFD44755;
+  --shadow-button-inset: inset 0px 1px 0px 0px #fff6af;
+  --shadow-button-focus: 0 0 18px 2px #FFD447cc;
+  --shadow-flatpickr-calendar: 0 4px 40px #FFD44733;
+  --shadow-file-upload-label-hover: 0 2px 18px 0 #FFD44799;
+
+  /* Transições */
+  --transition-speed: 0.2s cubic-bezier(0.4,0,0.2,1);
+
+  /* Outros */
+  --form-max-width: 520px;
+}
+
+/* Reseta o box-sizing globalmente para o modelo moderno */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body,
+form {
+  background: var(--color-black);
+  color: var(--color-mustard);
+  font-family: var(--font-family-primary);
+  letter-spacing: var(--letter-spacing-base);
+  line-height: var(--line-height-base);
+}
+
+form {
+  max-width: var(--form-max-width);
+  width: 90%;
+  margin: var(--spacing-form-margin-v) auto;
+  padding: var(--spacing-form-padding-v) var(--spacing-form-padding-h);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-form);
+  border: var(--border-width-sm) solid var(--color-border-strong);
+}
+
+fieldset {
+  border: none;
+  margin: 0 0 var(--spacing-fieldset-margin-bottom) 0;
+  padding: 0;
+}
+
+legend, h1, h2, h3 {
+  font-family: var(--font-family-title);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-mustard);
+  margin-bottom: var(--spacing-legend-margin-bottom);
+  letter-spacing: var(--letter-spacing-title);
+  font-size: var(--font-size-h1);
+}
+
+label {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  font-size: var(--font-size-label);
+  color: var(--color-mustard);
+}
+
+/* Estilização dos inputs e selects (básico e para Flatpickr) */
+input,
+textarea,
+select {
+  width: 100%; /* ALTERADO PARA 100% PARA PREENCHER O FORMULÁRIO */
+  padding: var(--spacing-input-padding-v) var(--spacing-input-padding-h);
+  min-height: var(--min-height-input);
+  margin-bottom: var(--spacing-xxxl); /* Margem padrão para separar campos */
+  font-size: var(--font-size-base);
+  color: var(--color-gray-light);
+  background: var(--color-gray);
+  border: var(--border-width-xs) solid var(--color-border-strong);
+  border-radius: var(--border-radius-sm);
+  outline: none;
+  transition: box-shadow var(--transition-speed), border var(--transition-speed), background var(--transition-speed), color var(--transition-speed);
+  box-shadow: none;
+  font-family: var(--font-family-primary);
+  font-weight: var(--font-weight-regular);
+}
+
+/* Quando campo está preenchido, cor mostarda destaque */
+input.filled,
+textarea.filled,
+select.filled {
+  color: var(--color-mustard);
+  background: var(--color-filled-bg);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--color-mustard);
+  background: var(--color-filled-bg);
+  color: var(--color-mustard);
+  box-shadow: var(--shadow-input-focus);
+}
+
+textarea {
+  min-height: var(--min-height-textarea);
+  resize: vertical;
+}
+
+/* Checkbox e radio minimalistas */
+input[type="checkbox"],
+input[type="radio"] {
+  width: auto;
+  min-height: auto;
+  padding: initial;
+  margin-right: var(--spacing-lg);
+  accent-color: var(--color-mustard);
+  box-shadow: var(--shadow-checkbox-radio);
+}
+
+/* Remove input file padrão */
+input[type="file"] {
+  display: none;
+}
+
+/* Range estilizado */
+input[type="range"] {
+  width: 100%;
+  background: transparent;
+  accent-color: var(--color-mustard);
+  margin-bottom: var(--spacing-xxxl);
+  min-height: auto;
+  padding: initial;
+}
+
+/* Cor favorita */
+input[type="color"] {
+  background: none;
+  border: none;
+  width: var(--color-input-width);
+  height: var(--color-input-height);
+  padding: 0;
+  margin-bottom: var(--spacing-xxxl);
+}
+
+/* Botões estilizados */
+button,
+input[type="submit"],
+input[type="reset"] {
+  box-shadow: var(--shadow-button-inset);
+  background:linear-gradient(to bottom, var(--color-button-gradient-start) 5%, var(--color-button-gradient-end) 100%);
+  background-color:var(--color-button-gradient-start);
+  border-radius:var(--border-radius-xs);
+  border:var(--border-width-xs) solid var(--color-button-border);
+  display: block; /* Botões agora ocupam 100% por padrão */
+  width: 100%; /* Botões agora ocupam 100% por padrão */
+  cursor:pointer;
+  color:var(--color-button-text);
+  font-family:Arial; /* Mantenho Arial para texto do botão, ou pode usar var(--font-family-primary) */
+  font-size:var(--font-size-button);
+  font-weight:var(--font-weight-bold);
+  padding:var(--button-padding-v) var(--button-padding-h);
+  text-decoration:none;
+  text-shadow:0px 1px 0px var(--color-button-text-shadow);
+  margin-top: var(--spacing-md); /* Espaçamento entre botões e elementos acima */
+  margin-bottom: var(--spacing-xxxl); /* Espaçamento padrão para o próximo elemento */
+  margin-left: 0;
+  margin-right: 0;
+  transition: background var(--transition-speed), color var(--transition-speed), box-shadow var(--transition-speed), border var(--transition-speed);
+  min-height: var(--min-height-input);
+}
+
+/* Ajusta o primeiro botão que não está dentro de um form-group ou button-group para ter margin-top 0 */
+form > button:first-of-type {
+  margin-top: 0;
+}
+
+button:focus,
+input[type="submit"]:focus,
+input[type="reset"]:focus {
+  outline: none;
+  background:linear-gradient(to bottom, var(--color-button-gradient-end) 5%, var(--color-button-gradient-start) 100%);
+  background-color:var(--color-button-gradient-end);
+  box-shadow: var(--shadow-button-focus);
+  border:var(--border-width-xs) solid var(--color-button-border);
+}
+
+button:hover,
+input[type="submit"]:hover,
+input[type="reset"]:hover {
+  background:linear-gradient(to bottom, var(--color-button-gradient-end) 5%, var(--color-button-gradient-start) 100%);
+  background-color:var(--color-button-gradient-end);
+}
+
+button:active,
+input[type="submit"]:active,
+input[type="reset"]:active {
+  position:relative;
+  top:var(--border-width-xs);
+}
+
+/* Placeholder */
+::-webkit-input-placeholder, ::placeholder {
+  color: var(--color-placeholder);
+  opacity: 1;
+  font-style: italic;
+}
+
+/* Mensagens de erro */
+.form-error,
+input:invalid,
+textarea:invalid,
+select:invalid {
+  color: var(--color-red) !important;
+  border-color: var(--color-red) !important;
+  box-shadow: var(--shadow-error) !important;
+  background: var(--color-error-bg) !important;
+}
+
+.form-error {
+  margin: var(--spacing-md) 0 var(--spacing-xxxl) 0;
+  font-size: var(--font-size-error);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-error);
+}
+
+/* Grupos de check/radio */
+.checkbox-group,
+.radio-group {
+  margin-bottom: var(--spacing-xxxl);
+}
+
+.checkbox-group label,
+.radio-group label {
+  display: inline-block;
+  margin-right: var(--spacing-xxxl);
+  font-size: var(--font-size-label);
+}
+
+/* Progress bar e meter */
+progress,
+meter {
+  width: 100%;
+  height: var(--progress-meter-height);
+  margin-bottom: var(--spacing-xxxl);
+  appearance: none;
+  background: var(--color-gray);
+  border-radius: var(--border-radius-sm);
+  box-shadow: var(--shadow-input-focus);
+}
+
+progress::-webkit-progress-bar {
+  background: var(--color-gray);
+  border-radius: var(--border-radius-sm);
+}
+progress::-webkit-progress-value {
+  background: var(--color-mustard);
+  border-radius: var(--border-radius-sm);
+}
+meter::-webkit-meter-bar {
+  background: var(--color-gray);
+  border-radius: var(--border-radius-sm);
+}
+meter::-webkit-meter-optimum-value {
+  background: var(--color-mustard);
+}
+
+/* Switch customizado */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: var(--switch-width);
+  height: var(--switch-height);
+  margin-bottom: var(--spacing-xxxl);
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--color-gray);
+  transition: var(--transition-speed);
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-slider);
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: var(--switch-slider-height);
+  width: var(--switch-slider-width);
+  left: var(--spacing-xs);
+  bottom: var(--spacing-xxs);
+  background: var(--color-mustard);
+  border-radius: 50%;
+  transition: var(--transition-speed);
+}
+.switch input:checked + .slider {
+  background: var(--color-filled-bg);
+}
+.switch input:checked + .slider:before {
+  transform: translateX(var(--spacing-xxxl));
+}
+
+/* Helper text */
+.form-helper {
+  color: var(--color-helper-text);
+  font-size: var(--font-size-helper);
+  margin-bottom: var(--spacing-md);
+  margin-top: calc(-1 * var(--spacing-xl));
+}
+
+/* Disabled state */
+input:disabled,
+textarea:disabled,
+select:disabled,
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--color-disabled-bg) !important;
+  color: var(--color-disabled-text) !important;
+  border-color: var(--color-disabled-border) !important;
+  box-shadow: none;
+}
+
+/* Contêiner para grupos de botões */
+/* A classe 'inline' do HTML pode ser mantida, mas a visibilidade será controlada pela classe 'visible' via JS. */
+/* #actionButtons { display: none; } */ /* Remova ou comente esta linha no HTML/CSS inicial se a div já começa oculta via JS */
+
+#actionButtons {
+    display: none; /* Esconde a div por padrão */
+}
+
+#actionButtons.visible { /* Nova regra para quando a div estiver visível, com display: flex */
+  display: flex; /* Habilita flexbox para os botões dentro */
+  gap: var(--spacing-button-group-gap); /* Espaçamento entre os botões */
+  justify-content: space-between; /* Distribui o espaço entre os botões */
+  margin-top: var(--spacing-xxxl); /* Adicionando margem superior para separar do link gerado */
+  margin-bottom: var(--spacing-xxxl); /* Margem inferior para separar do próximo elemento */
+}
+
+/* Botões dentro da div "actionButtons" */
+#actionButtons button {
+  flex: 1; /* Faz com que cada botão ocupe uma parte igual do espaço disponível */
+  width: auto; /* Anula o width: 100% padrão dos botões */
+  margin-top: 0; /* Remove a margem superior que o botão padrão teria */
+  margin-bottom: 0; /* Remove a margem inferior para não duplicar o espaçamento da div pai */
+}
+
+/* Ajustes para a div "form-group" */
+.form-group {
+    margin-bottom: var(--spacing-xxxl); /* Garante espaçamento consistente para todos os form-groups */
+}
+
+/* Remover margin-bottom dos botões quando dentro de um .form-group ou imediatamente antes de outro button */
+/* Esta regra é importante para evitar espaçamento duplo se um botão individual seguir outro ou estiver em um grupo */
+.form-group button,
+button + button {
+    margin-bottom: 0;
+}
+
+/* Ajuste específico para o botão "Gerar Link" para não ter margem superior extra se vier depois de um input */
+/* O botão "Gerar Link" deve ter uma margem superior consistente */
+.form-group:last-of-type + button { /* Seleciona o botão que vem imediatamente após o último .form-group */
+    margin-top: var(--spacing-xxxl); /* Garante que o botão 'Gerar Link' tenha um bom espaçamento */
+}
+
+
+/* Ajusta o espaçamento da label para campos de texto longos, como o link gerado */
+/* O textarea não deve ter margin-bottom, pois o espaçamento será controlado pela div actionButtons ou pelo form-group */
+.form-group textarea {
+    margin-bottom: 0; /* Remove a margem inferior do textarea */
+}
+
+
+@media (max-width: 640px) {
+  form {
+    padding: var(--spacing-xxl) var(--spacing-md);
+    width: 98vw;
+  }
+}
+
+/* Upload de arquivo customizado */
+.file-upload-wrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: var(--spacing-xxxl);
+}
+.file-upload-input {
+  opacity: 0;
+  width: 100%;
+  height: 48px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  cursor: pointer;
+}
+.file-upload-label {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background: var(--color-gray);
+  color: var(--color-mustard);
+  border: var(--border-width-xs) solid var(--color-border-strong);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-input-padding-v) var(--spacing-input-padding-h);
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  box-shadow: var(--shadow-input-focus);
+  transition: background var(--transition-speed), color var(--transition-speed), box-shadow var(--transition-speed);
+}
+.file-upload-label:hover,
+.file-upload-label:focus {
+  background: var(--color-filled-bg);
+  color: var(--color-mustard);
+  box-shadow: 0 2px 18px 0 #FFD44799;
+}
+.file-upload-filename {
+  margin-left: var(--file-upload-label-icon-margin);
+  color: var(--color-helper-text);
+  font-size: var(--font-size-file-filename);
+  font-style: italic;
+  max-width: 55%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Flatpickr override para tema "futurista" */
+.flatpickr-calendar {
+  background: var(--color-flatpickr-bg);
+  color: var(--color-mustard);
+  border-radius: var(--border-radius-md) !important;
+  box-shadow: var(--shadow-flatpickr-calendar);
+  font-family: var(--font-family-primary);
+  border: var(--border-width-xs) solid var(--color-mustard);
+  overflow: hidden;
+}
+.flatpickr-months,
+.flatpickr-innerContainer,
+.flatpickr-weekdays,
+.flatpickr-days,
+.flatpickr-time,
+.flatpickr-rContainer,
+.flatpickr-month,
+.flatpickr-next-month,
+.flatpickr-prev-month {
+  border-radius: var(--border-radius-md) !important;
+}
+
+/* Dias individuais também arredondados */
+.flatpickr-day,
+.flatpickr-day.selected,
+.flatpickr-day.today,
+.flatpickr-day:hover {
+  border-radius: var(--border-radius-sm) !important;
+}
+
+.flatpickr-months, .flatpickr-weekdays, .flatpickr-days {
+  background: transparent;
+}
+.flatpickr-day.selected, .flatpickr-day.today {
+  background: var(--color-mustard);
+  color: var(--color-black);
+}
+.flatpickr-day:hover {
+  background: var(--color-flatpickr-day-hover);
+  color: var(--color-black);
+}
+.flatpickr-time input {
+  background: var(--color-gray);
+  color: var(--color-mustard);
+  border: none;
+}
+.flatpickr-input[readonly] {
+  background: var(--color-gray);
+  color: var(--color-mustard);
+  cursor: pointer;
+}
+
+/* Ajustes para o plugin monthSelectPlugin do Flatpickr */
+.flatpickr-monthSelect-months {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--flatpickr-calendar-gap);
+  padding: var(--flatpickr-month-select-padding-v-top) var(--flatpickr-month-select-padding-h) var(--flatpickr-month-select-padding-v-bottom) var(--flatpickr-month-select-padding-h);
+  justify-content: center;
+}
+
+.flatpickr-monthSelect-month {
+  flex: 1 0 28%;
+  margin: var(--spacing-xs) 0;
+  padding: var(--spacing-lg) 0;
+  border-radius: var(--border-radius-sm) !important;
+  background: transparent;
+  color: var(--color-mustard);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-flatpickr-month-select);
+  text-align: center;
+  cursor: pointer;
+  transition: background var(--transition-speed), color var(--transition-speed);
+  min-width: var(--flatpickr-month-select-min-width);
+}
+
+.flatpickr-monthSelect-month:hover,
+.flatpickr-monthSelect-month:focus {
+  background: var(--color-mustard);
+  color: var(--color-black);
+  outline: none;
+}
+
+.flatpickr-monthSelect-month.selected,
+.flatpickr-monthSelect-month.flatpickr-current-month {
+  background: var(--color-mustard);
+  color: var(--color-black);
+  font-weight: var(--font-weight-bold);
+}
+
+.flatpickr-monthSelect-month.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

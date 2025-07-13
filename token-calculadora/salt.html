@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Calculadora de SALT</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>🔢 Calculadora de SALT</h1>
+
+    <label for="factory">📦 Endereço da Fábrica (Factory):</label>
+    <input type="text" id="factory" placeholder="Ex: 0x123...abc" />
+    
+    <label for="bytecode">Bytecode do Contrato</label>
+    <textarea id="bytecode" rows="6" placeholder="⚠️ Cole aqui o bytecode do contrato após compilação no Remix (guia Solidity Compiler > Details > Bytecode)..."></textarea>
+
+    <label for="suffix">🔚 Últimos 4 caracteres desejados:</label>
+    <input type="text" id="suffix" placeholder="Ex: f262" maxlength="4" />
+
+    <button onclick="buscarSalt()">🚀 Iniciar Busca</button>
+
+    <pre id="resultado">Resultado aparecerá aqui...</pre>
+  </div>
+
+  <script>
+    async function buscarSalt() {
+      const factory = document.getElementById("factory").value.trim().toLowerCase();
+      const bytecode = document.getElementById("bytecode").value.trim();
+      const suffix = document.getElementById("suffix").value.trim().toLowerCase();
+      const resultado = document.getElementById("resultado");
+
+      if (!factory || !bytecode || !suffix) {
+        resultado.innerText = "❌ Preencha todos os campos corretamente!";
+        return;
+      }
+
+      resultado.innerText = "⏳ Iniciando busca...";
+
+      const bytecodeHash = ethers.utils.keccak256(bytecode);
+      let salt = 0;
+      const maxAttempts = 100000000;
+
+      while (salt < maxAttempts) {
+        const saltHex = ethers.utils.hexZeroPad(ethers.BigNumber.from(salt).toHexString(), 32);
+        const raw = `0xff${factory.replace(/^0x/, "")}${saltHex.replace(/^0x/, "")}${bytecodeHash.replace(/^0x/, "")}`;
+        const address = "0x" + ethers.utils.keccak256(raw).slice(-40);
+        const last4 = address.slice(-4).toLowerCase();
+
+        if (salt % 10000 === 0) {
+          resultado.innerText = `🔄 Tentativas: ${salt.toLocaleString()}\nProcurando endereço com final: ${suffix}...`;
+          await new Promise(resolve => setTimeout(resolve, 1));
+        }
+
+        if (last4 === suffix) {
+          resultado.innerText =
+            `✅ Endereço encontrado!\n\n` +
+            `📍 Endereço do contrato: 0x${address}\n` +
+            `🔢 SALT (decimal): ${salt}\n` +
+            `🔢 SALT (hex): ${saltHex}`;
+          return;
+        }
+
+        salt++;
+      }
+
+      resultado.innerText = `❌ Não encontrado em até ${maxAttempts.toLocaleString()} tentativas.`;
+    }
+  </script>
+</body>
+</html>

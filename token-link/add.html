@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adicionar Rede e Token no MetaMask</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/andreval74/estilo-base-sistema/styles.css">
+</head>
+<body>
+  <h1>Adicionar ao MetaMask</h1>
+  <p>Clique no botão abaixo para adicionar o token automaticamente.</p>
+  <button onclick="startProcess()">🚀 Adicionar Token</button>
+  <div id="status"></div>
+  <div id="manual" class="instructions" style="display:none;"></div>
+  <script>
+    function isMobile() {
+      return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    }
+    async function startProcess() {
+      const params = new URLSearchParams(window.location.search);
+      const encodedData = params.get('data');
+      let decoded = {};
+      try {
+        decoded = JSON.parse(atob(encodedData));
+      } catch (e) {
+        document.getElementById('status').textContent = "❌ Dados inválidos no link.";
+        return;
+      }
+      const chainId = decoded.chainId, chainName = decoded.chainName,
+            rpcUrl = decoded.rpcUrl, blockExplorer = decoded.blockExplorer,
+            nativeCurrency = decoded.nativeCurrency, nativeDecimals = parseInt(decoded.nativeDecimals),
+            tokenAddress = decoded.tokenAddress, tokenSymbol = decoded.tokenSymbol,
+            tokenDecimals = parseInt(decoded.tokenDecimals), tokenImage = decoded.tokenImage;
+
+      if (!window.ethereum) {
+        if (isMobile()) {
+          document.getElementById('status').innerHTML = "📱 Adicionar rede manualmente e depois o token.";
+          const deeplink = `https://metamask.app.link/dapp/${window.location.hostname}${window.location.pathname}?data=${encodeURIComponent(encodedData)}`;
+          const manual = document.getElementById('manual');
+          manual.style.display = "block";
+          manual.innerHTML = `<b>Instruções para adicionar manualmente:</b>
+          <ul>
+            <li><b>Chain ID:</b> ${chainId}</li>
+            <li><b>Nome:</b> ${chainName}</li>
+            <li><b>RPC URL:</b> ${rpcUrl}</li>
+            <li><b>Block Explorer:</b> ${blockExplorer}</li>
+            <li><b>Moeda:</b> ${nativeCurrency}</li>
+            <li><b>Decimais:</b> ${nativeDecimals}</li>
+          </ul>
+          <p>Após adicionar a rede no MetaMask App, volte e clique no botão acima para adicionar o token.</p>
+          <a href="${deeplink}" class="deep-link">🔗 Abrir no MetaMask App</a>`;
+          return;
+        } else {
+          document.getElementById('status').textContent = "❌ MetaMask não detectado no navegador.";
+          return;
+        }
+      }
+
+      try {
+        // Adicionar token
+        const wasAdded = await window.ethereum.request({
+          method: 'wallet_watchAsset',
+          params: {
+            type: 'ERC20',
+            options: { address: tokenAddress, symbol: tokenSymbol, decimals: tokenDecimals, image: tokenImage || undefined }
+          }
+        });
+        if (wasAdded) {
+          document.getElementById('status').textContent = "✅ Token adicionado com sucesso!";
+        } else {
+          document.getElementById('status').textContent = "⚠️ Token não foi adicionado.";
+        }
+      } catch (e) {
+        console.error(e);
+        document.getElementById('status').textContent = "⚠️ Erro ao adicionar o token.";
+      }
+    }
+  </script>
+</body>
+</html>
