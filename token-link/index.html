@@ -31,4 +31,77 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label for="chainId" class="form-label">Chain ID</label>
-                            <input type="text" id="chainId
+                            <input type="text" id="chainId" class="form-control" placeholder="0x38" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="chainName" class="form-label">Nome da Rede</label>
+                            <input type="text" id="chainName" class="form-control" placeholder="BNB Smart Chain" readonly>
+                        </div>
+                        <div class="col-12">
+                            <label for="rpcUrl" class="form-label">RPC URL</label>
+                            <input type="text" id="rpcUrl" class="form-control" placeholder="https://bsc-dataseed.binance.org" readonly>
+                        </div>
+                        <div class="col-12">
+                            <label for="blockExplorer" class="form-label">Block Explorer URL</label>
+                            <input type="text" id="blockExplorer" class="form-control" placeholder="https://bscscan.com" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="nativeCurrency" class="form-label">Símbolo da Moeda</label>
+                            <input type="text" id="nativeCurrency" class="form-control" placeholder="BNB" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="nativeDecimals" class="form-label">Decimais</label>
+                            <input type="number" id="nativeDecimals" class="form-control" placeholder="18" readonly>
+                        </div>
+                    </div>
+
+                    <!-- Token Section -->
+                    <hr class="my-4">
+                    <div id="tokenSection" class="mb-3">
+                        <label for="tokenAddress" class="form-label">Endereço do Token</label>
+                        <input type="text" id="tokenAddress" class="form-control mb-2" placeholder="0x...">
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-outline-secondary" onclick="fetchTokenData()">🔍 Buscar Dados do Token</button>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="tokenSymbol" class="form-label">Símbolo do Token</label>
+                            <input type="text" id="tokenSymbol" class="form-control" placeholder="USDT" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="tokenDecimals" class="form-label">Decimais do Token</label>
+                            <input type="number" id="tokenDecimals" class="form-control" placeholder="18" readonly>
+                        </div>
+                        <div class="col-12">
+                            <label for="tokenImage" class="form-label">URL da Imagem (opcional)</label>
+                            <input type="text" id="tokenImage" class="form-control" placeholder="https://..." readonly>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 my-4">
+                        <button type="button" class="btn btn-success" onclick="generateLink()">✅ Gerar Link</button>
+                    </div>
+
+                    <!-- Generated Link -->
+                    <div class="mb-3">
+                        <label for="generatedLink" class="form-label">Link Gerado</label>
+                        <textarea id="generatedLink" class="form-control" rows="3" readonly></textarea>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-between gap-2">
+                        <button type="button" class="btn btn-outline-primary flex-fill" onclick="copyLink()">📋 Copiar Link</button>
+                        <button type="button" class="btn btn-outline-success flex-fill" onclick="shareLink()">📲 Compartilhar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
