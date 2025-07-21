@@ -4,122 +4,90 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gerador de Link MetaMask (Rede e Token)</title>
-      <!-- Favicons -->
-  <link href="../selecao/assets/img/favicon.png" rel="icon">
-  <link href="../selecao/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
-
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com" rel="preconnect">
-  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-
-  <!-- Vendor CSS Files -->
-  <link href="../selecao/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="../selecao/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="../selecao/assets/vendor/aos/aos.css" rel="stylesheet">
-  <link href="../selecao/assets/vendor/animate.css/animate.min.css" rel="stylesheet">
-  <link href="../selecao/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
-  <link href="../selecao/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
-
-  <!-- Main CSS File -->
-  <link href="../selecao/assets/css/main.css" rel="stylesheet">
-    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"> -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script> -->
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 </head>
-<body class="index-page">
-    <main class="py-5">
+<body>
+    <main class="main-content">
         <div class="container">
-            <div class="card shadow p-4">
-                <h1 class="text-center mb-4">⚙️ Gerador de Link MetaMask</h1>
+            <form class="metaMask-generator-form">
+                <h1>Gerador de Link MetaMask</h1>
                 
-                <form id="metaMask-generator-form">
-                    <!-- Network Section -->
-                    <div id="networkSection" class="mb-4" style="display:none;">
-                        <label for="networkSearch" class="form-label">Digite o nome ou ChainID da Rede</label>
-                        <input type="text" id="networkSearch" class="form-control mb-2" placeholder="Ex: BNB ou 56">
-                        <select id="networkSelect" size="6" class="form-select mb-2"></select>
-                        <div class="form-text">Clique na rede para preencher os campos abaixo automaticamente.</div>
-                    </div>
+                <div id="networkSection" class="form-group" style="display:none;">
+                    <label for="networkSearch">Digite o nome ou ChainID da Rede</label>
+                    <input id="networkSearch" placeholder="Ex: BNB ou 56">
+                    <select id="networkSelect" size="6" class="filled"></select>
+                    <p class="form-helper">Clique na rede para preencher os campos abaixo automaticamente.</p>
+                </div>
 
-                    <div class="d-grid gap-2 mb-4">
-                        <button type="button" class="btn btn-outline-primary" onclick="fetchNetworks()">🔍 Buscar Redes</button>
-                    </div>
+                <button type="button" onclick="fetchNetworks()">🔍 Buscar Redes</button>
 
-                    <!-- Network Fields -->
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label for="chainId" class="form-label">Chain ID</label>
-                            <input type="text" id="chainId" class="form-control" placeholder="0x38" readonly>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="chainName" class="form-label">Nome da Rede</label>
-                            <input type="text" id="chainName" class="form-control" placeholder="BNB Smart Chain" readonly>
-                        </div>
-                        <div class="col-12">
-                            <label for="rpcUrl" class="form-label">RPC URL</label>
-                            <input type="text" id="rpcUrl" class="form-control" placeholder="https://bsc-dataseed.binance.org" readonly>
-                        </div>
-                        <div class="col-12">
-                            <label for="blockExplorer" class="form-label">Block Explorer URL</label>
-                            <input type="text" id="blockExplorer" class="form-control" placeholder="https://bscscan.com" readonly>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="nativeCurrency" class="form-label">Símbolo da Moeda</label>
-                            <input type="text" id="nativeCurrency" class="form-control" placeholder="BNB" readonly>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="nativeDecimals" class="form-label">Decimais</label>
-                            <input type="number" id="nativeDecimals" class="form-control" placeholder="18" readonly>
-                        </div>
-                    </div>
+                <div class="form-group">
+                    <label for="chainId">Chain ID</label>
+                    <input id="chainId" placeholder="0x38" readonly class="filled">
+                </div>
+                
+                <div class="form-group">
+                    <label for="chainName">Nome da Rede</label>
+                    <input id="chainName" placeholder="BNB Smart Chain" readonly class="filled">
+                </div>
+                
+                <div class="form-group">
+                    <label for="rpcUrl">RPC URL</label>
+                    <input id="rpcUrl" placeholder="https://bsc-dataseed.binance.org" readonly class="filled">
+                </div>
+                
+                <div class="form-group">
+                    <label for="blockExplorer">Block Explorer URL</label>
+                    <input id="blockExplorer" placeholder="https://bscscan.com" readonly class="filled">
+                </div>
+                
+                <div class="form-group">
+                    <label for="nativeCurrency">Símbolo da Moeda</label>
+                    <input id="nativeCurrency" placeholder="BNB" readonly class="filled">
+                </div>
+                
+                <div class="form-group">
+                    <label for="nativeDecimals">Decimais</label>
+                    <input id="nativeDecimals" placeholder="18" type="number" readonly class="filled">
+                </div>
 
-                    <!-- Token Section -->
-                    <hr class="my-4">
-                    <div id="tokenSection" class="mb-3">
-                        <label for="tokenAddress" class="form-label">Endereço do Token</label>
-                        <input type="text" id="tokenAddress" class="form-control mb-2" placeholder="0x...">
-                        <div class="d-grid gap-2">
-                            <button type="button" class="btn btn-outline-secondary" onclick="fetchTokenData()">🔍 Buscar Dados do Token</button>
-                        </div>
-                    </div>
-                    
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label for="tokenSymbol" class="form-label">Símbolo do Token</label>
-                            <input type="text" id="tokenSymbol" class="form-control" placeholder="USDT" readonly>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="tokenDecimals" class="form-label">Decimais do Token</label>
-                            <input type="number" id="tokenDecimals" class="form-control" placeholder="18" readonly>
-                        </div>
-                        <div class="col-12">
-                            <label for="tokenImage" class="form-label">URL da Imagem (opcional)</label>
-                            <input type="text" id="tokenImage" class="form-control" placeholder="https://..." readonly>
-                        </div>
-                    </div>
+                <div id="tokenSection" class="form-group">
+                    <label for="tokenAddress">Endereço do Token</label>
+                    <input id="tokenAddress" placeholder="0x...">
+                    <button type="button" onclick="fetchTokenData()">🔍 Buscar Dados do Token</button>
+                </div>
+                
+                <div class="form-group">
+                    <label for="tokenSymbol">Símbolo do Token</label>
+                    <input id="tokenSymbol" placeholder="USDT" readonly class="filled">
+                </div>
+                
+                <div class="form-group">
+                    <label for="tokenDecimals">Decimais do Token</label>
+                    <input id="tokenDecimals" placeholder="18" type="number" readonly class="filled">
+                </div>
+                
+                <div class="form-group">
+                    <label for="tokenImage">URL da Imagem (opcional)</label>
+                    <input id="tokenImage" placeholder="https://..." readonly class="filled">
+                </div>
 
-                    <div class="d-grid gap-2 my-4">
-                        <button type="button" class="btn btn-success" onclick="generateLink()">✅ Gerar Link</button>
-                    </div>
-
-                    <!-- Generated Link -->
-                    <div class="mb-3">
-                        <label for="generatedLink" class="form-label">Link Gerado</label>
-                        <textarea id="generatedLink" class="form-control" rows="3" readonly></textarea>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="d-flex justify-content-between gap-2">
-                        <button type="button" class="btn btn-outline-primary flex-fill" onclick="copyLink()">📋 Copiar Link</button>
-                        <button type="button" class="btn btn-outline-success flex-fill" onclick="shareLink()">📲 Compartilhar</button>
-                    </div>
-                </form>
-            </div>
+                <button type="button" onclick="generateLink()">Gerar Link</button>
+                
+                <div class="form-group">
+                    <label for="generatedLink">Link Gerado</label>
+                    <textarea id="generatedLink" readonly></textarea>
+                </div>
+                
+                <div id="actionButtons" class="inline"> 
+                    <button type="button" onclick="copyLink()">📋 Copiar Link</button>
+                    <button type="button" onclick="shareLink()">📲 Compartilhar</button>
+                </div>
+            </form>
         </div>
     </main>
 
-    <!-- Bootstrap JS Bundle -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script> -->
     <script src="script.js"></script>
 </body>
 </html>
