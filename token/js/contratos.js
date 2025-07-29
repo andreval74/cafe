@@ -30,12 +30,15 @@ export async function salvarContrato(inputs, callback) {
       .replace(/{{ORIGINAL_CONTRACT}}/g, "address(0)");
 
     contratoSource = contrato;
+    console.log('CONTRATO GERADO PARA COMPILAÇÃO:\n', contratoSource);
 
-    // Download automático do contrato
+    // Download automático do contrato com nome do token
     const blob = new Blob([contrato], { type: "text/plain" });
     const a = document.createElement("a");
+    // Usa o nome do token, removendo espaços e caracteres especiais
+    let nomeArquivo = (inputs.symbol || "contrato").replace(/[^a-zA-Z0-9_]/g, "") + ".sol";
     a.href = URL.createObjectURL(blob);
-    a.download = "contrato-gerado.sol";
+    a.download = nomeArquivo;
     document.body.appendChild(a);
     a.click();
     setTimeout(() => {
@@ -67,12 +70,15 @@ export async function compilarContrato(contractName, btnCompilar, compileStatus,
       btnCompilar.disabled = false;
       return;
     }
+    // Extrai o nome do contrato automaticamente do código fonte
+    let match = contratoSource.match(/contract\s+([A-Za-z0-9_]+)/);
+    let nomeContrato = match ? match[1] : contractName;
     const response = await fetch('https://token-creator-api.onrender.com/compile', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         sourceCode: contratoSource,
-        contractName: contractName,
+        contractName: nomeContrato,
         compilerVersion: "0.8.19"
       })
     });
@@ -87,7 +93,7 @@ export async function compilarContrato(contractName, btnCompilar, compileStatus,
 
     contratoAbi = result.abi;
     contratoBytecode = result.bytecode;
-    contratoName = contractName;
+    contratoName = nomeContrato;
     marcarConcluido(btnCompilar);
 
     compileStatus.textContent = "Compilado com sucesso!";

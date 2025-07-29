@@ -1,28 +1,22 @@
 
+
 import { marcarConcluido, clearErrors, markErrors } from './utils.js';
 import { salvarContrato, compilarContrato } from './contratos.js';
 import { deployContrato } from './deploy.js';
-import { connectMetaMask, listenMetaMask } from './metamask.js';
+import { connectMetaMask, listenMetaMask, adicionarTokenMetaMask } from './metamask.js';
 import { buscarSaltFake, pararBuscaSalt } from './salt.js';
 
-console.log("main.js iniciado");
 
 document.addEventListener('DOMContentLoaded', () => {
   const btnConectar = document.getElementById('connect-metamask-btn');
   const btnNext = document.getElementById('next-step-1');
-  console.log('Botão conectar existe?', !!btnConectar);
-  console.log('Botão próximo existe?', !!btnNext);
-
   if (btnConectar) {
     btnConectar.addEventListener('click', () => {
-      console.log('Botão MetaMask clicado!');
       connectMetaMask(inputOwner, networkDisplay);
     });
   }
-
   if (btnNext) {
     btnNext.addEventListener('click', () => {
-      console.log('Botão Próximo clicado!');
       nextStep();
     });
   }
@@ -194,5 +188,5 @@ toggleAddressCustomization();
 window.toggleAddressCustomization = toggleAddressCustomization;
 window.buscarSalt = () => buscarSaltFake(targetSuffix.value, saltFound, predictedAddress);
 window.pararBusca = pararBuscaSalt;
-window.adicionarTokenMetaMask = typeof adicionarTokenMetaMask === "function" ? adicionarTokenMetaMask : () => {};
+window.adicionarTokenMetaMask = adicionarTokenMetaMask;
 });
