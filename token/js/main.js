@@ -150,12 +150,24 @@ btnSalvarContrato.onclick = () => {
   });
 };
 
+
+// Adiciona spinner durante a compilação
 btnCompilar.onclick = () => {
-  compilarContrato(inputNome.value, btnCompilar, compileStatus, btnDeploy);
+  compileStatus.innerHTML = '<span class="spinner"></span> Compilando via servidor...';
+  compilarContrato(inputNome.value, btnCompilar, compileStatus, btnDeploy).finally(() => {
+    // Spinner será removido pela própria função ao finalizar
+  });
 };
 
-btnDeploy.onclick = () => {
-  deployContrato(btnDeploy, deployStatus);
+
+btnDeploy.onclick = async () => {
+  await deployContrato(btnDeploy, deployStatus);
+  // Após deploy, preencher campos do passo MetaMask
+  const address = window.contractAddress || '';
+  document.getElementById('final-token-address').value = address;
+  document.getElementById('final-token-symbol').value = inputSymbol.value;
+  document.getElementById('final-token-decimals').value = inputDecimals.value;
+  document.getElementById('final-token-image').value = inputImage.value;
 };
 
 // -------------------- MetaMask --------------------

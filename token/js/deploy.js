@@ -28,6 +28,7 @@ export async function deployContrato(btnDeploy, deployStatus) {
     await contract.deployTransaction.wait();
     marcarConcluido(btnDeploy);
     deployStatus.textContent = "Deploy realizado! Endereço: " + contract.address;
+    window.contractAddress = contract.address;
     if (document.getElementById('next-step-4')) {
       document.getElementById('next-step-4').style.display = "inline-block";
     }

@@ -172,7 +172,12 @@
             <input type="text" id="final-token-image" readonly>
           </div>
         </div>
-        <button onclick="adicionarTokenMetaMask()" class="btn-success">➕ Adicionar no MetaMask</button>
+        <button onclick="adicionarTokenMetaMask({
+          address: document.getElementById('final-token-address').value,
+          symbol: document.getElementById('final-token-symbol').value,
+          decimals: document.getElementById('final-token-decimals').value,
+          image: document.getElementById('final-token-image').value
+        })" class="btn-success">➕ Adicionar no MetaMask</button>
         <div id="metamask-status"></div>
         <div class="navigation">
           <button onclick="prevStep()" class="btn-secondary">⬅️ Voltar</button>
