@@ -1,3 +1,10 @@
+
+import { marcarConcluido, clearErrors, markErrors } from './utils.js';
+import { salvarContrato, compilarContrato } from './contratos.js';
+import { deployContrato } from './deploy.js';
+import { connectMetaMask, listenMetaMask } from './metamask.js';
+import { buscarSaltFake, pararBuscaSalt } from './salt.js';
+
 console.log("main.js iniciado");
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -20,14 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-// main.js
-// Fluxo principal do app: navegação entre steps, resumo, integração entre módulos
-
-import { marcarConcluido, clearErrors, markErrors } from './utils.js';
-import { salvarContrato, compilarContrato } from './contrato.js';
-import { deployContrato } from './deploy.js';
-import { connectMetaMask, listenMetaMask } from './metamask.js';
-import { buscarSaltFake, pararBuscaSalt } from './salt.js';
 
 // Referências a elementos DOM
 const steps = document.querySelectorAll('.step-content');
@@ -102,12 +101,20 @@ function validateStep1() {
 
 // -------------------- Resumo Step --------------------
 function fillResumo() {
+  let ownerChecksum = inputOwner.value;
+  try {
+    if (window.ethers && window.ethers.utils) {
+      ownerChecksum = window.ethers.utils.getAddress(inputOwner.value);
+    }
+  } catch (e) {
+    // Se não conseguir converter, mantém o valor original
+  }
   summaryBox.innerHTML = `
     <strong>Nome:</strong> ${inputNome.value}<br>
     <strong>Símbolo:</strong> ${inputSymbol.value}<br>
     <strong>Decimais:</strong> ${inputDecimals.value}<br>
     <strong>Total Supply:</strong> ${inputSupply.value}<br>
-    <strong>Proprietário:</strong> ${inputOwner.value}<br>
+    <strong>Proprietário:</strong> ${ownerChecksum}<br>
     <strong>Logo:</strong> ${inputImage.value || "-"}<br>
     <strong>Rede:</strong> ${networkDisplay.value || "-"}<br>
     <strong>Tipo de Endereço:</strong> ${(radioPersonalizado && radioPersonalizado.checked) ? "Personalizado" : "Padrão"}
@@ -130,12 +137,18 @@ if (btnReiniciar) btnReiniciar.addEventListener('click', reiniciarFluxo);
 
 // -------------------- Handlers principais --------------------
 btnSalvarContrato.onclick = () => {
+  let ownerChecksum = inputOwner.value;
+  try {
+    if (window.ethers && window.ethers.utils) {
+      ownerChecksum = window.ethers.utils.getAddress(inputOwner.value);
+    }
+  } catch (e) {}
   salvarContrato({
     nome: inputNome.value,
     symbol: inputSymbol.value,
     decimals: inputDecimals.value,
     supply: inputSupply.value,
-    owner: inputOwner.value,
+    owner: ownerChecksum,
     image: inputImage.value
   }, () => {
     btnCompilar.disabled = false;

@@ -1,4 +1,4 @@
-// contrato.js
+// contratos.js
 // Geração, substituição de variáveis e compilação do contrato Solidity via API
 
 import { marcarConcluido } from './utils.js';

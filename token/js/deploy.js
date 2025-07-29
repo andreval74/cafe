@@ -2,7 +2,7 @@
 // Deploy do contrato na blockchain via ethers.js + MetaMask
 
 import { marcarConcluido } from './utils.js';
-import { contratoAbi, contratoBytecode } from './contrato.js';
+import { contratoAbi, contratoBytecode } from './contratos.js';
 
 /**
  * Faz o deploy do contrato usando ethers.js e MetaMask.

@@ -1,38 +1,23 @@
-// deploy.js
-// Deploy do contrato na blockchain via ethers.js + MetaMask
-
-import { marcarConcluido } from './utils.js';
-import { contratoAbi, contratoBytecode } from './contrato.js';
+// salt.js
+// Funções mock para busca de salt e parada da busca
 
 /**
- * Faz o deploy do contrato usando ethers.js e MetaMask.
- * @param {HTMLElement} btnDeploy
- * @param {HTMLElement} deployStatus
+ * Simula a busca de um salt para endereço personalizado.
+ * @param {string} targetSuffix
+ * @param {HTMLInputElement} saltFound
+ * @param {HTMLInputElement} predictedAddress
  */
-export async function deployContrato(btnDeploy, deployStatus) {
-  btnDeploy.disabled = true;
-  deployStatus.textContent = "Enviando deploy...";
-  try {
-    if (!window.ethereum) throw new Error("MetaMask não encontrada");
-    await window.ethereum.request({ method: 'eth_requestAccounts' });
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
+export function buscarSaltFake(targetSuffix, saltFound, predictedAddress) {
+  saltFound.value = '0xFAKE';
+  predictedAddress.value = '0x1234...'+(targetSuffix || 'cafe');
+  document.getElementById('salt-output').style.display = '';
+  document.getElementById('salt-output').textContent = 'Busca simulada concluída!';
+}
 
-    // Adapte conforme construtor do seu contrato
-    let args = [];
-
-    const factory = new ethers.ContractFactory(contratoAbi, contratoBytecode, signer);
-    const contract = await factory.deploy(...args);
-    deployStatus.textContent = "Aguardando confirmação do deploy...";
-
-    await contract.deployTransaction.wait();
-    marcarConcluido(btnDeploy);
-    deployStatus.textContent = "Deploy realizado! Endereço: " + contract.address;
-    if (document.getElementById('next-step-4')) {
-      document.getElementById('next-step-4').style.display = "inline-block";
-    }
-  } catch (e) {
-    deployStatus.textContent = "Erro no deploy: " + (e.message || e);
-    btnDeploy.disabled = false;
-  }
+/**
+ * Simula a parada da busca de salt.
+ */
+export function pararBuscaSalt() {
+  document.getElementById('salt-output').style.display = '';
+  document.getElementById('salt-output').textContent = 'Busca parada.';
 }
