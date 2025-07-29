@@ -29,9 +29,7 @@ export async function salvarContrato(inputs, callback) {
       .replace(/{{TOKEN_LOGO_URI}}/g, inputs.image || "")
       .replace(/{{ORIGINAL_CONTRACT}}/g, "address(0)");
 
-    contratoSource = contrato;
-    console.log('CONTRATO GERADO PARA COMPILAÇÃO:\n', contratoSource);
-
+    
     // Download automático do contrato com nome do token
     const blob = new Blob([contrato], { type: "text/plain" });
     const a = document.createElement("a");

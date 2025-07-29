@@ -8,6 +8,8 @@ import { buscarSaltFake, pararBuscaSalt } from './salt.js';
 
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Garante que o botão Compilar começa desabilitado
+  if (btnCompilar) btnCompilar.disabled = true;
   const btnConectar = document.getElementById('connect-metamask-btn');
   const btnNext = document.getElementById('next-step-1');
   if (btnConectar) {
@@ -151,14 +153,43 @@ btnSalvarContrato.onclick = () => {
 };
 
 
-// Adiciona spinner durante a compilação
+
+// Spinner Overlay helpers
+function showSpinnerOverlay(msg = "Processando...") {
+  let overlay = document.getElementById('custom-spinner-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'custom-spinner-overlay';
+    overlay.className = 'custom-spinner-overlay';
+    overlay.innerHTML = `<div style=\"text-align:center\"><div class='custom-spinner'></div><div style='color:#fff;font-size:1.2rem;margin-top:16px'>${msg}</div></div>`;
+    document.body.appendChild(overlay);
+  } else {
+    overlay.style.display = 'flex';
+    overlay.querySelector('div').lastChild.textContent = msg;
+  }
+}
+function hideSpinnerOverlay() {
+  const overlay = document.getElementById('custom-spinner-overlay');
+  if (overlay) overlay.style.display = 'none';
+}
+
 btnCompilar.onclick = () => {
-  compileStatus.innerHTML = '<span class="spinner"></span> Compilando via servidor...';
-  compilarContrato(inputNome.value, btnCompilar, compileStatus, btnDeploy).finally(() => {
-    // Spinner será removido pela própria função ao finalizar
-  });
+  if (!window.contratoSource || !window.contratoSource.trim()) {
+    compileStatus.textContent = '⚠️ Salve o contrato antes de compilar!';
+    return;
+  }
+  showSpinnerOverlay('Compilando contrato...');
+  compileStatus.textContent = '';
+  compilarContrato(inputNome.value, btnCompilar, compileStatus, btnDeploy)
+    .finally(() => {
+      hideSpinnerOverlay();
+    });
 };
 
+
+
+const btnAddMetaMask = document.querySelector('button[onclick^="adicionarTokenMetaMask"]');
+if (btnAddMetaMask) btnAddMetaMask.disabled = true;
 
 btnDeploy.onclick = async () => {
   await deployContrato(btnDeploy, deployStatus);
@@ -168,13 +199,16 @@ btnDeploy.onclick = async () => {
   document.getElementById('final-token-symbol').value = inputSymbol.value;
   document.getElementById('final-token-decimals').value = inputDecimals.value;
   document.getElementById('final-token-image').value = inputImage.value;
+  // Habilita o botão MetaMask se todos os campos estiverem preenchidos
+  if (btnAddMetaMask) {
+    if (address && inputSymbol.value && inputDecimals.value) {
+      btnAddMetaMask.disabled = false;
+    } else {
+      btnAddMetaMask.disabled = true;
+    }
+  }
 };
 
-// -------------------- MetaMask --------------------
-document.getElementById('connect-metamask-btn').addEventListener('click', () => {
-  console.log('Botão MetaMask clicado!');
-  connectMetaMask(inputOwner, networkDisplay);
-});
 listenMetaMask(inputOwner, networkDisplay);
 
 // -------------------- Busca Salt --------------------
@@ -200,5 +234,23 @@ toggleAddressCustomization();
 window.toggleAddressCustomization = toggleAddressCustomization;
 window.buscarSalt = () => buscarSaltFake(targetSuffix.value, saltFound, predictedAddress);
 window.pararBusca = pararBuscaSalt;
-window.adicionarTokenMetaMask = adicionarTokenMetaMask;
+// Garante que a função global nunca receba undefined
+window.adicionarTokenMetaMask = function(args) {
+  // Log para depuração
+  console.log('adicionarTokenMetaMask chamado com:', args);
+  if (!args || typeof args !== 'object') {
+    alert('Dados do token não informados!');
+    return;
+  }
+  // Remove espaços extras
+  const address = (args.address || '').trim();
+  const symbol = (args.symbol || '').trim();
+  const decimals = Number(args.decimals);
+  const image = (args.image || '').trim();
+  if (!address || !symbol || isNaN(decimals) || decimals < 0) {
+    alert('Preencha todos os campos do token antes de adicionar ao MetaMask.');
+    return;
+  }
+  adicionarTokenMetaMask({ address, symbol, decimals, image });
+};
 });
