@@ -1,27 +1,18 @@
+// Adiciona evento ao botão Conectar MetaMask
+const btnConectar = document.getElementById('connect-metamask-btn');
+if (btnConectar) {
+  btnConectar.addEventListener('click', () => {
+    connectMetaMask(inputOwner, networkDisplay);
+  });
+}
 
 
 import { marcarConcluido, clearErrors, markErrors } from './utils.js';
-import { salvarContrato, compilarContrato } from './contratos.js';
+import { salvarContrato, compilarContrato, contratoSource } from './contratos.js';
 import { deployContrato } from './deploy.js';
-import { connectMetaMask, listenMetaMask, adicionarTokenMetaMask } from './metamask.js';
+import { connectMetaMask, listenMetaMask, adicionarTokenMetaMask, montarTokenData, gerarLinkToken } from './metamask.js';
 import { buscarSaltFake, pararBuscaSalt } from './salt.js';
 
-
-document.addEventListener('DOMContentLoaded', () => {
-  // Garante que o botão Compilar começa desabilitado
-  if (btnCompilar) btnCompilar.disabled = true;
-  const btnConectar = document.getElementById('connect-metamask-btn');
-  const btnNext = document.getElementById('next-step-1');
-  if (btnConectar) {
-    btnConectar.addEventListener('click', () => {
-      connectMetaMask(inputOwner, networkDisplay);
-    });
-  }
-  if (btnNext) {
-    btnNext.addEventListener('click', () => {
-      nextStep();
-    });
-  }
 
 
 // Referências a elementos DOM
@@ -46,6 +37,9 @@ const compileStatus = document.getElementById('compile-status');
 const deployStatus = document.getElementById('deploy-status');
 const networkDisplay = document.getElementById('networkDisplay');
 let currentStep = 1;
+
+// Garante que o botão Compilar começa desabilitado
+if (btnCompilar) btnCompilar.disabled = true;
 
 // -------------------- Navegação entre steps --------------------
 function showStep(step) {
@@ -155,41 +149,94 @@ btnSalvarContrato.onclick = () => {
 
 
 // Spinner Overlay helpers
-function showSpinnerOverlay(msg = "Processando...") {
-  let overlay = document.getElementById('custom-spinner-overlay');
-  if (!overlay) {
-    overlay = document.createElement('div');
-    overlay.id = 'custom-spinner-overlay';
-    overlay.className = 'custom-spinner-overlay';
-    overlay.innerHTML = `<div style=\"text-align:center\"><div class='custom-spinner'></div><div style='color:#fff;font-size:1.2rem;margin-top:16px'>${msg}</div></div>`;
-    document.body.appendChild(overlay);
-  } else {
-    overlay.style.display = 'flex';
-    overlay.querySelector('div').lastChild.textContent = msg;
-  }
+
+// Barra de progresso/contador na compilação
+function startCompileProgressBar() {
+  let percent = 0;
+  compileStatus.textContent = `Compilando contrato... 0%`;
+  const interval = setInterval(() => {
+    percent += Math.floor(Math.random() * 2) + 5; // Simula progresso
+    if (percent >= 100) percent = 100;
+    compileStatus.textContent = `Compilando contrato... ${percent}%`;
+    if (percent >= 100) clearInterval(interval);
+  }, 200);
+  return interval;
 }
-function hideSpinnerOverlay() {
-  const overlay = document.getElementById('custom-spinner-overlay');
-  if (overlay) overlay.style.display = 'none';
+function stopCompileProgressBar(interval) {
+  if (interval) clearInterval(interval);
+  compileStatus.textContent = 'Compilado com sucesso!';
 }
 
 btnCompilar.onclick = () => {
-  if (!window.contratoSource || !window.contratoSource.trim()) {
+  if (!contratoSource || !contratoSource.trim()) {
     compileStatus.textContent = '⚠️ Salve o contrato antes de compilar!';
     return;
   }
-  showSpinnerOverlay('Compilando contrato...');
-  compileStatus.textContent = '';
+  let progressInterval = startCompileProgressBar();
   compilarContrato(inputNome.value, btnCompilar, compileStatus, btnDeploy)
     .finally(() => {
-      hideSpinnerOverlay();
+      stopCompileProgressBar(progressInterval);
     });
 };
 
 
 
-const btnAddMetaMask = document.querySelector('button[onclick^="adicionarTokenMetaMask"]');
+
+
+
+// ----------- Passo 5: Adicionar ao MetaMask e Compartilhar Link -----------
+const btnAddMetaMask = document.getElementById('btn-add-metamask');
+const btnShareLink = document.getElementById('btn-share-link');
+const shareLinkField = document.getElementById('share-link-field');
+const statusDiv = document.getElementById('metamask-status');
+
 if (btnAddMetaMask) btnAddMetaMask.disabled = true;
+if (btnShareLink) btnShareLink.style.display = 'none';
+if (shareLinkField) shareLinkField.style.display = 'none';
+
+if (btnAddMetaMask) {
+  btnAddMetaMask.onclick = async function() {
+    statusDiv.textContent = '';
+    btnAddMetaMask.disabled = true;
+    try {
+      const address = document.getElementById('final-token-address').value;
+      const symbol = document.getElementById('final-token-symbol').value;
+      const decimals = parseInt(document.getElementById('final-token-decimals').value, 10);
+      const image = document.getElementById('final-token-image').value;
+      const result = await adicionarTokenMetaMask({ address, symbol, decimals, image });
+      if (result) {
+        statusDiv.textContent = 'Token adicionado ao MetaMask!';
+        statusDiv.style.color = '#16924b';
+        if (btnShareLink) btnShareLink.style.display = 'inline-block';
+      } else {
+        statusDiv.textContent = 'Não foi possível adicionar o token.';
+        statusDiv.style.color = '#b91c1c';
+      }
+    } catch (e) {
+      statusDiv.textContent = 'Erro ao adicionar token: ' + (e.message || e);
+      statusDiv.style.color = '#b91c1c';
+    }
+    btnAddMetaMask.disabled = false;
+  };
+}
+
+if (btnShareLink) {
+  btnShareLink.onclick = () => {
+    const address = document.getElementById('final-token-address').value;
+    const symbol = document.getElementById('final-token-symbol').value;
+    const decimals = parseInt(document.getElementById('final-token-decimals').value, 10);
+    const image = document.getElementById('final-token-image').value;
+    const link = gerarLinkToken({ address, symbol, decimals, image });
+    shareLinkField.value = link;
+    shareLinkField.style.display = 'block';
+    shareLinkField.select();
+    document.execCommand('copy');
+    btnShareLink.textContent = '🔗 Link Copiado!';
+    setTimeout(() => {
+      btnShareLink.textContent = '🔗 Compartilhar Link';
+    }, 2000);
+  };
+}
 
 btnDeploy.onclick = async () => {
   await deployContrato(btnDeploy, deployStatus);
@@ -207,6 +254,9 @@ btnDeploy.onclick = async () => {
       btnAddMetaMask.disabled = true;
     }
   }
+  // Esconde botão de compartilhar link e campo de link ao novo deploy
+  if (btnShareLink) btnShareLink.style.display = 'none';
+  if (shareLinkField) shareLinkField.style.display = 'none';
 };
 
 listenMetaMask(inputOwner, networkDisplay);
@@ -253,4 +303,3 @@ window.adicionarTokenMetaMask = function(args) {
   }
   adicionarTokenMetaMask({ address, symbol, decimals, image });
 };
-});

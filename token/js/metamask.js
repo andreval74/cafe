@@ -1,6 +1,7 @@
 // metamask.js
-// Integração com MetaMask, eventos de troca de conta e rede
-
+// Integração centralizada com MetaMask, manipulação de token e utilitários de link
+// ------------------------------------------------------------
+// BLOCO 1: Conexão e eventos MetaMask
 /**
  * Solicita conexão com MetaMask, preenche owner e rede em inputs.
  * @param {HTMLInputElement} inputOwner 
@@ -15,12 +16,16 @@ export async function connectMetaMask(inputOwner, networkDisplay) {
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
     const chainId = await window.ethereum.request({ method: 'eth_chainId' });
     const owner = accounts[0] || "";
-    inputOwner.value = owner;
-    inputOwner.readOnly = false;
-    inputOwner.style.background = "#e9f7ef";
-    networkDisplay.value = chainId;
-    document.getElementById('connect-metamask-btn').style.display = "none";
-    document.getElementById('connected-wallet-info').style.display = "";
+    if (inputOwner) {
+      inputOwner.value = owner;
+      inputOwner.readOnly = false;
+      inputOwner.style.background = "#e9f7ef";
+    }
+    if (networkDisplay) networkDisplay.value = chainId;
+    const btn = document.getElementById('connect-metamask-btn');
+    if (btn) btn.style.display = "none";
+    const info = document.getElementById('connected-wallet-info');
+    if (info) info.style.display = "";
   } catch (err) {
     alert("Erro ao conectar MetaMask: " + (err && err.message ? err.message : err));
   }
@@ -29,22 +34,23 @@ export async function connectMetaMask(inputOwner, networkDisplay) {
 /**
  * Monitora eventos de troca de conta e rede do MetaMask.
  * Atualiza os inputs de owner e rede em tempo real.
- * @param {HTMLInputElement} inputOwner 
- * @param {HTMLInputElement} networkDisplay
  */
 export function listenMetaMask(inputOwner, networkDisplay) {
   if (!window.ethereum) return;
   window.ethereum.on('accountsChanged', function (accounts) {
-    if (accounts[0]) inputOwner.value = accounts[0];
+    if (accounts[0] && inputOwner) inputOwner.value = accounts[0];
   });
   window.ethereum.on('chainChanged', function (chainId) {
-    networkDisplay.value = chainId;
+    if (networkDisplay) networkDisplay.value = chainId;
   });
 }
 
+// ------------------------------------------------------------
+// BLOCO 2: Adicionar token ao MetaMask
 /**
- * Adiciona o token gerado ao MetaMask do usuário
- * Parâmetros: symbol, decimals, address, image (opcional)
+ * Adiciona o token ao MetaMask do usuário
+ * @param {Object} tokenData - { address, symbol, decimals, image }
+ * @returns {Promise<boolean>}
  */
 export async function adicionarTokenMetaMask({ address, symbol, decimals, image }) {
   if (!window.ethereum) {
@@ -75,3 +81,114 @@ export async function adicionarTokenMetaMask({ address, symbol, decimals, image 
     return false;
   }
 }
+
+// ------------------------------------------------------------
+// BLOCO 3: Utilitários para geração e decodificação de link de token
+/**
+ * Gera um link de compartilhamento para adicionar token
+ * @param {Object} tokenData - dados do token e rede
+ * @returns {string} - link pronto para compartilhar
+ */
+export function gerarLinkToken(tokenData) {
+  const encoded = btoa(JSON.stringify(tokenData));
+  const baseUrl = window.location.origin + window.location.pathname.replace(/[^\/]*$/, 'addtoken-link.html');
+  return `${baseUrl}?data=${encoded}`;
+}
+
+/**
+ * Decodifica os dados do token a partir do link
+ * @param {string} search - window.location.search
+ * @returns {Object|null}
+ */
+export function decodificarLinkToken(search) {
+  const params = new URLSearchParams(search);
+  let encodedData = params.get('data');
+  if (!encodedData) return null;
+  if (encodedData.includes('=')) encodedData = encodedData.split('=')[0];
+  try {
+    return JSON.parse(atob(encodedData));
+  } catch {
+    return null;
+  }
+}
+
+// ------------------------------------------------------------
+// BLOCO 4: Utilitário para montar objeto de dados do token
+/**
+ * Monta objeto de dados do token para MetaMask/link
+ * @param {Object} campos - campos do formulário ou deploy
+ * @returns {Object}
+ */
+export function montarTokenData(campos) {
+  return {
+    address: campos.address || campos.tokenAddress || '',
+    symbol: campos.symbol || campos.tokenSymbol || '',
+    decimals: campos.decimals || campos.tokenDecimals || 18,
+    image: campos.image || campos.tokenImage || '',
+    name: campos.name || campos.tokenName || '',
+    chainId: campos.chainId || '',
+    chainName: campos.chainName || '',
+    rpcUrl: campos.rpcUrl || '',
+    blockExplorer: campos.blockExplorer || '',
+    nativeCurrency: campos.nativeCurrency || '',
+    nativeDecimals: campos.nativeDecimals || 18,
+    networkName: campos.networkName || ''
+  };
+}
+
+// ------------------------------------------------------------
+// BLOCO 5: (Opcional) Função para trocar/adicionar rede automaticamente
+/**
+ * Tenta trocar para a rede correta no MetaMask, ou adiciona se não existir
+ * @param {Object} tokenData
+ * @returns {Promise<boolean>}
+ */
+export async function switchOrAddNetwork(tokenData) {
+  if (!window.ethereum || !tokenData.chainId) return false;
+  try {
+    const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
+    const expectedChainIdDec = parseInt(tokenData.chainId);
+    const currentChainIdDec = parseInt(currentChainId, 16);
+    if (currentChainIdDec === expectedChainIdDec) return true;
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: '0x' + expectedChainIdDec.toString(16) }]
+      });
+      return true;
+    } catch (switchError) {
+      if (switchError.code === 4902) {
+        try {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [{
+              chainId: '0x' + expectedChainIdDec.toString(16),
+              chainName: tokenData.networkName || tokenData.chainName,
+              rpcUrls: [tokenData.rpcUrl],
+              blockExplorerUrls: [tokenData.blockExplorer],
+              nativeCurrency: {
+                name: tokenData.nativeCurrency,
+                symbol: tokenData.nativeCurrency,
+                decimals: parseInt(tokenData.nativeDecimals) || 18
+              }
+            }]
+          });
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: '0x' + expectedChainIdDec.toString(16) }]
+          });
+          return true;
+        } catch (addError) {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    }
+  } catch {
+    return false;
+  }
+}
+
+// ------------------------------------------------------------
+// FIM DO ARQUIVO CENTRALIZADO DE INTEGRAÇÃO METAMASK E TOKEN

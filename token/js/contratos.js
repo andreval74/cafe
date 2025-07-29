@@ -30,6 +30,9 @@ export async function salvarContrato(inputs, callback) {
       .replace(/{{ORIGINAL_CONTRACT}}/g, "address(0)");
 
     
+    // Atualiza a variável exportada para uso posterior
+    contratoSource = contrato;
+
     // Download automático do contrato com nome do token
     const blob = new Blob([contrato], { type: "text/plain" });
     const a = document.createElement("a");
