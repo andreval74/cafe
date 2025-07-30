@@ -1,5 +1,5 @@
 import { marcarConcluido, clearErrors, markErrors } from './add-utils.js';
-import { salvarContrato, compilarContrato, contratoSource } from './add-contratos.js';
+import { salvarContrato, compilarContrato, contratoSource } from './add-contratos-hybrid.js';
 import { deployContrato } from './add-deploy.js';
 import { connectMetaMask, listenMetaMask, adicionarTokenMetaMask, montarTokenData, gerarLinkToken, switchOrAddNetwork } from './add-metamask.js';
 import { buscarSaltFake, pararBuscaSalt } from './add-salt.js';
@@ -37,8 +37,9 @@ const deployStatus = document.getElementById('deploy-status');
 const networkDisplay = document.getElementById('networkDisplay');
 let currentStep = 1;
 
-// Garante que o botão Compilar começa desabilitado
+// Garante que os botões começam desabilitados
 if (btnCompilar) btnCompilar.disabled = true;
+if (btnDeploy) btnDeploy.disabled = true;
 
 // -------------------- Navegação entre steps --------------------
 function showStep(step) {
@@ -152,30 +153,61 @@ btnSalvarContrato.onclick = () => {
 // Barra de progresso/contador na compilação
 function startCompileProgressBar() {
   let percent = 0;
+  let dots = 0;
   compileStatus.textContent = `Compilando contrato... 0%`;
   const interval = setInterval(() => {
-    percent += Math.floor(Math.random() * 2) + 5; // Simula progresso
-    if (percent >= 100) percent = 100;
-    compileStatus.textContent = `Compilando contrato... ${percent}%`;
-    if (percent >= 100) clearInterval(interval);
-  }, 200);
+    percent += Math.floor(Math.random() * 3) + 2; // Progresso mais lento e realista
+    if (percent >= 95) percent = 95; // Para em 95% até a compilação real terminar
+    
+    // Adiciona pontos animados
+    dots = (dots + 1) % 4;
+    let dotStr = '.'.repeat(dots);
+    compileStatus.textContent = `Compilando contrato${dotStr} ${percent}%`;
+  }, 300);
   return interval;
 }
-function stopCompileProgressBar(interval) {
+
+function stopCompileProgressBar(interval, success = true) {
   if (interval) clearInterval(interval);
-  compileStatus.textContent = 'Compilado com sucesso!';
+  if (success) {
+    compileStatus.textContent = '✅ Compilado com sucesso!';
+    compileStatus.style.color = '#16924b';
+  } else {
+    compileStatus.style.color = '#b91c1c';
+  }
 }
 
-btnCompilar.onclick = () => {
+btnCompilar.onclick = async () => {
   if (!contratoSource || !contratoSource.trim()) {
     compileStatus.textContent = '⚠️ Salve o contrato antes de compilar!';
+    compileStatus.style.color = '#b91c1c';
     return;
   }
+  
+  console.log('🚀 Iniciando compilação híbrida...');
+  compileStatus.style.color = '#333';
   let progressInterval = startCompileProgressBar();
-  compilarContrato(inputNome.value, btnCompilar, compileStatus, btnDeploy)
-    .finally(() => {
-      stopCompileProgressBar(progressInterval);
-    });
+  
+  try {
+    const result = await compilarContrato(inputNome.value, btnCompilar, compileStatus, btnDeploy);
+    console.log('✅ Compilação concluída:', result);
+    stopCompileProgressBar(progressInterval, true);
+    
+    // Garantir que o botão de deploy seja habilitado
+    setTimeout(() => {
+      if (btnDeploy) {
+        btnDeploy.disabled = false;
+        btnDeploy.style.opacity = '1';
+        btnDeploy.style.cursor = 'pointer';
+        console.log('🎯 Botão de deploy definitivamente habilitado');
+      }
+    }, 500);
+    
+  } catch (error) {
+    console.error('❌ Erro na compilação:', error);
+    stopCompileProgressBar(progressInterval, false);
+    btnCompilar.disabled = false;
+  }
 };
 
 
@@ -311,6 +343,7 @@ toggleAddressCustomization();
 window.toggleAddressCustomization = toggleAddressCustomization;
 window.buscarSalt = () => buscarSaltFake(targetSuffix.value, saltFound, predictedAddress);
 window.pararBusca = pararBuscaSalt;
+window.marcarConcluido = marcarConcluido; // Expõe função marcarConcluido globalmente
 // Garante que a função global nunca receba undefined
 window.adicionarTokenMetaMask = function(args) {
   // Log para depuração

@@ -65,15 +65,24 @@ export async function salvarContrato(inputs, callback) {
 export async function compilarContrato(contractName, btnCompilar, compileStatus, btnDeploy) {
   btnCompilar.disabled = true;
   compileStatus.textContent = "Compilando via servidor...";
+  
   try {
     if (!contratoSource || !contratoSource.trim()) {
       compileStatus.textContent = "Código fonte do contrato não encontrado!";
       btnCompilar.disabled = false;
-      return;
+      throw new Error("Código fonte do contrato não encontrado!");
     }
+    
     // Extrai o nome do contrato automaticamente do código fonte
     let match = contratoSource.match(/contract\s+([A-Za-z0-9_]+)/);
     let nomeContrato = match ? match[1] : contractName;
+    
+    console.log('Enviando contrato para compilação:', nomeContrato); // Debug
+    
+    // Timeout de 30 segundos para a compilação
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+    
     const response = await fetch('https://token-creator-api.onrender.com/compile', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -81,26 +90,51 @@ export async function compilarContrato(contractName, btnCompilar, compileStatus,
         sourceCode: contratoSource,
         contractName: nomeContrato,
         compilerVersion: "0.8.19"
-      })
+      }),
+      signal: controller.signal
     });
-    if (!response.ok) throw new Error('Erro ao comunicar com o servidor de compilação');
+    
+    clearTimeout(timeoutId);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Erro do servidor:', response.status, errorText);
+      throw new Error(`Erro do servidor (${response.status}): ${errorText}`);
+    }
+    
     const result = await response.json();
+    console.log('Resultado da compilação:', result); // Debug
 
     if (!result.success) {
-      compileStatus.textContent = "Erro na compilação: bytecode não retornado.";
+      const errorMsg = result.error || "Bytecode não retornado";
+      compileStatus.textContent = "Erro na compilação: " + errorMsg;
       btnCompilar.disabled = false;
-      return;
+      throw new Error("Erro na compilação: " + errorMsg);
     }
 
     contratoAbi = result.abi;
     contratoBytecode = result.bytecode;
     contratoName = nomeContrato;
+    
+    console.log('Compilação bem-sucedida - ABI:', contratoAbi ? 'OK' : 'NULL');
+    console.log('Compilação bem-sucedida - Bytecode:', contratoBytecode ? 'OK' : 'NULL');
+    
     marcarConcluido(btnCompilar);
-
     compileStatus.textContent = "Compilado com sucesso!";
-    btnDeploy.disabled = false;
+    
+    if (btnDeploy) {
+      btnDeploy.disabled = false;
+    }
+    
+    return result; // Retorna o resultado para a Promise
+    
   } catch (e) {
-    compileStatus.textContent = "Erro na compilação: " + (e.message || e);
+    if (e.name === 'AbortError') {
+      compileStatus.textContent = "Timeout: Compilação demorou mais que 30 segundos";
+    } else {
+      compileStatus.textContent = "Erro na compilação: " + (e.message || e);
+    }
     btnCompilar.disabled = false;
+    throw e; // Re-lança o erro para ser capturado pela Promise
   }
 }
