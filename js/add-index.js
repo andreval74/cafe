@@ -1,5 +1,5 @@
 import { marcarConcluido, clearErrors, markErrors } from './add-utils.js';
-import { salvarContrato, compilarContrato, contratoSource, debugContractState } from './add-contratos-direct.js';
+import { salvarContrato, compilarContrato, contratoSource, debugContractState, showVerificationInfo } from './add-contratos-verified.js';
 import { deployContrato } from './add-deploy.js';
 import { connectMetaMask, listenMetaMask, adicionarTokenMetaMask, montarTokenData, gerarLinkToken, switchOrAddNetwork } from './add-metamask.js';
 import { buscarSaltFake, pararBuscaSalt } from './add-salt.js';
@@ -31,6 +31,7 @@ const saltFound = document.getElementById('saltFound');
 const btnSalvarContrato = document.getElementById('btn-salvar-contrato');
 const btnCompilar = document.getElementById('btn-compilar-contrato');
 const btnDeploy = document.getElementById('btn-deploy-contrato');
+const btnVerificationInfo = document.getElementById('btn-verification-info');
 const nextStep4 = document.getElementById('next-step-4');
 const compileStatus = document.getElementById('compile-status');
 const deployStatus = document.getElementById('deploy-status');
@@ -196,12 +197,46 @@ btnCompilar.onclick = async () => {
     console.log('✅ Compilação concluída:', result);
     stopCompileProgressBar(progressInterval, true);
     
+    // Mostra botão para dados de verificação
+    if (btnVerificationInfo) {
+      btnVerificationInfo.style.display = 'inline-block';
+      btnVerificationInfo.disabled = false;
+    }
+    
   } catch (error) {
     console.error('❌ Erro na compilação:', error);
     stopCompileProgressBar(progressInterval, false);
     btnCompilar.disabled = false;
   }
 };
+
+// Handler para botão de verificação
+if (btnVerificationInfo) {
+  btnVerificationInfo.onclick = () => {
+    console.log('📋 Mostrando informações de verificação...');
+    showVerificationInfo();
+    
+    // Mostra uma modal ou alerta com instruções
+    const instructions = `
+📋 DADOS DE VERIFICAÇÃO COPIADOS NO CONSOLE!
+
+1. Abra o Console do navegador (F12)
+2. Procure por "DADOS PARA VERIFICAÇÃO NO EXPLORADOR"
+3. Use as funções:
+   - window.verificationElements.sourceCode.select() + Ctrl+C (copiar código)
+   - window.verificationElements.abi.select() + Ctrl+C (copiar ABI)
+
+🔧 CONFIGURAÇÕES PARA O EXPLORADOR:
+- Compiler Version: v0.8.19+commit.7dd6d404
+- Optimization: No
+- Runs: 200
+
+⚠️ IMPORTANTE: Use EXATAMENTE estas configurações no explorador!
+    `;
+    
+    alert(instructions);
+  };
+}
 
 
 
