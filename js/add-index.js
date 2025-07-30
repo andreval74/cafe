@@ -1,5 +1,5 @@
 import { marcarConcluido, clearErrors, markErrors } from './add-utils.js';
-import { salvarContrato, compilarContrato, contratoSource } from './add-contratos-simple.js';
+import { salvarContrato, compilarContrato, contratoSource, debugContractState } from './add-contratos-direct.js';
 import { deployContrato } from './add-deploy.js';
 import { connectMetaMask, listenMetaMask, adicionarTokenMetaMask, montarTokenData, gerarLinkToken, switchOrAddNetwork } from './add-metamask.js';
 import { buscarSaltFake, pararBuscaSalt } from './add-salt.js';
@@ -178,6 +178,9 @@ function stopCompileProgressBar(interval, success = true) {
 }
 
 btnCompilar.onclick = async () => {
+  console.log('🔍 Verificando estado antes da compilação...');
+  debugContractState();
+  
   if (!contratoSource || !contratoSource.trim()) {
     compileStatus.textContent = '⚠️ Salve o contrato antes de compilar!';
     compileStatus.style.color = '#b91c1c';

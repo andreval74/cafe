@@ -6,56 +6,69 @@
 2. **❌ Bytecode null no deploy**: Import incorreto no add-deploy.js  
 3. **⏰ API timeouts**: Problemas de timeout nas requisições
 4. **🔗 Import paths incorretos**: Arquivos importando versões antigas
+5. **🚫 Payload inválido**: APIs recebendo sourceCode vazio
 
 ## ✅ CORREÇÕES APLICADAS:
 
-### 1. **Versão Simplificada Estável** (`add-contratos-simple.js`)
-- ✅ Usa apenas API externa com proxy CORS (funcional)
-- ✅ Remove dependência problemática do solc.min.js
-- ✅ URLs testadas e funcionais: corsproxy.io + allorigins.win
-- ✅ Timeout aumentado para 30 segundos
-- ✅ Validação rigorosa de bytecode e ABI
+### 1. **Versão Direct API** (`add-contratos-direct.js`) - MAIS RECENTE
+- ✅ Múltiplas estratégias de compilação (API direta + proxies)
+- ✅ Debug completo em cada etapa
+- ✅ Validação rigorosa de dados de entrada e saída
+- ✅ Fallback inteligente entre diferentes métodos
+- ✅ Tratamento específico para cada tipo de proxy CORS
 
-### 2. **Correção dos Imports**:
+### 2. **Debug Completo**:
 ```javascript
-// add-index.js
-import { salvarContrato, compilarContrato, contratoSource } from './add-contratos-simple.js';
+// Função de debug para verificar estado das variáveis
+debugContractState();
 
-// add-deploy.js  
-import { contratoAbi, contratoBytecode } from './add-contratos-simple.js';
+// Logs em cada etapa
+console.log('📄 Template carregado:', contrato.length, 'caracteres');
+console.log('💾 Contrato processado e salvo');
+console.log('🚀 Iniciando compilação...');
 ```
 
-### 3. **Deploy com Debug Completo**:
-- ✅ Validação prévia de ABI e bytecode
-- ✅ Logs detalhados para debugging
-- ✅ Verificação de formato do bytecode (0x prefix)
-- ✅ Mensagens de erro específicas
+### 3. **Estratégias de Compilação**:
+1. **API Direta**: Tenta sem proxy primeiro
+2. **CORS Proxy (corsproxy.io)**: Proxy confiável  
+3. **AllOrigins GET**: Método alternativo
 
-### 4. **Compilação Mais Robusta**:
-- ✅ Ordem de URLs otimizada (corsproxy.io primeiro)
-- ✅ Fallback automático entre APIs
-- ✅ Validação completa dos dados retornados
-- ✅ Logs detalhados para cada tentativa
+### 4. **Validações Rigorosas**:
+- ✅ Verificação de tamanho do código fonte (min 100 chars)
+- ✅ Validação de nome do contrato
+- ✅ Verificação de bytecode e ABI
+- ✅ Estado das variáveis a cada etapa
 
 ## 🔧 ARQUIVOS MODIFICADOS:
 
-1. **`js/add-contratos-simple.js`** ✨ **NOVO** - Compilador estável
-2. **`js/add-index.js`** 🔧 **ATUALIZADO** - Import corrigido
+1. **`js/add-contratos-direct.js`** ✨ **MAIS RECENTE** - Compilador com debug completo
+2. **`js/add-index.js`** 🔧 **ATUALIZADO** - Import + debug state
 3. **`js/add-deploy.js`** 🔧 **ATUALIZADO** - Import + debug
-4. **`js/add-contratos-hybrid.js`** 📁 **BACKUP** - Versão híbrida (fallback)
+4. **`js/add-contratos-simple.js`** 📁 **BACKUP** - Versão simples
+5. **`js/add-contratos-hybrid.js`** 📁 **BACKUP** - Versão híbrida
 
 ## 📊 RESULTADO ESPERADO:
 
+### Console de Salvamento:
+```
+� Carregando template do contrato...
+📄 Template carregado: 8500 caracteres
+🔄 Substituindo placeholders...
+💾 Contrato processado e salvo: 8500 caracteres
+✅ Contrato salvo com sucesso!
+```
+
 ### Console de Compilação:
 ```
-🚀 Iniciando compilação via API para: WKCOIN02
-🔄 Tentando API 1/2
-✅ API 1 funcionou!
+🔍 Verificando pré-requisitos...
+🔍 Estado das variáveis:
+- contratoSource: 8500 chars ✅
+🚀 Iniciando compilação...
+🔄 Tentativa 1: API Direta (sem proxy)
+✅ Estratégia 1 funcionou!
 💾 Dados da compilação salvos:
-- Nome: WKCOIN02
 - ABI: 54 funções
 - Bytecode: 14000+ caracteres
-- Preview bytecode: 0x6080604052600280546001600160a01b0319908116909155...
 ✅ Botão de deploy habilitado
 ```
 

@@ -8,6 +8,16 @@ export let contratoAbi = null;
 export let contratoBytecode = null;
 export let contratoName = null;
 
+// Função para debug - verificar estado das variáveis
+export function debugContractState() {
+  console.log('🔍 Estado atual das variáveis:');
+  console.log('- contratoSource:', contratoSource ? `${contratoSource.length} caracteres` : 'VAZIO');
+  console.log('- contratoAbi:', contratoAbi ? `${contratoAbi.length} funções` : 'NULL');
+  console.log('- contratoBytecode:', contratoBytecode ? `${contratoBytecode.length} caracteres` : 'NULL');
+  console.log('- contratoName:', contratoName || 'NULL');
+  return { contratoSource, contratoAbi, contratoBytecode, contratoName };
+}
+
 /**
  * Compilação via API externa com proxy CORS
  */
@@ -23,6 +33,18 @@ async function compileViaAPI(contractSource, contractName) {
     try {
       console.log(`🔄 Tentando API ${i+1}/${apiUrls.length}`);
       
+      const payload = {
+        sourceCode: contractSource,
+        contractName: contractName,
+        compilerVersion: "0.8.19"
+      };
+      
+      console.log('📦 Payload sendo enviado:', {
+        sourceCodeLength: payload.sourceCode ? payload.sourceCode.length : 'NULL',
+        contractName: payload.contractName,
+        compilerVersion: payload.compilerVersion
+      });
+      
       const controller = new AbortController();
       const timeoutId = setTimeout(() => {
         controller.abort();
@@ -34,11 +56,7 @@ async function compileViaAPI(contractSource, contractName) {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        body: JSON.stringify({
-          sourceCode: contractSource,
-          contractName: contractName,
-          compilerVersion: "0.8.19"
-        }),
+        body: JSON.stringify(payload),
         signal: controller.signal
       });
       
@@ -94,6 +112,11 @@ export async function salvarContrato(inputs, callback) {
       .replace(/{{ORIGINAL_CONTRACT}}/g, "address(0)");
 
     contratoSource = contrato;
+    
+    console.log('💾 Contrato salvo:');
+    console.log('- Tamanho:', contrato.length, 'caracteres');
+    console.log('- Preview:', contrato.substring(0, 200) + '...');
+    console.log('- Variable contratoSource definida:', contratoSource ? 'SIM' : 'NÃO');
 
     // Download automático do contrato
     const blob = new Blob([contrato], { type: "text/plain" });
@@ -128,15 +151,25 @@ export async function compilarContrato(contractName, btnCompilar, compileStatus,
   btnCompilar.disabled = true;
   
   try {
-    if (!contratoSource || !contratoSource.trim()) {
-      throw new Error("Código fonte do contrato não encontrado!");
+    // Validação rigorosa do código fonte
+    if (!contratoSource || typeof contratoSource !== 'string' || contratoSource.trim().length < 50) {
+      const errorMsg = !contratoSource ? 
+        "Código fonte não encontrado! Salve o contrato primeiro." :
+        `Código fonte inválido (${contratoSource.length} caracteres). Salve o contrato novamente.`;
+      throw new Error(errorMsg);
     }
     
     // Extrai o nome do contrato
     let match = contratoSource.match(/contract\s+([A-Za-z0-9_]+)/);
     let nomeContrato = match ? match[1] : contractName;
     
+    if (!nomeContrato || nomeContrato.trim() === '') {
+      throw new Error("Nome do contrato não encontrado no código fonte!");
+    }
+    
     console.log('🚀 Iniciando compilação via API para:', nomeContrato);
+    console.log('📄 Source code length:', contratoSource.length);
+    console.log('📄 Source code preview:', contratoSource.substring(0, 200) + '...');
     compileStatus.textContent = "Compilando via API externa...";
     
     const result = await compileViaAPI(contratoSource, nomeContrato);
