@@ -1,5 +1,5 @@
 import { marcarConcluido, clearErrors, markErrors } from './add-utils.js';
-import { salvarContrato, compilarContrato, contratoSource } from './add-contratos-hybrid.js';
+import { salvarContrato, compilarContrato, contratoSource } from './add-contratos-simple.js';
 import { deployContrato } from './add-deploy.js';
 import { connectMetaMask, listenMetaMask, adicionarTokenMetaMask, montarTokenData, gerarLinkToken, switchOrAddNetwork } from './add-metamask.js';
 import { buscarSaltFake, pararBuscaSalt } from './add-salt.js';
@@ -184,7 +184,7 @@ btnCompilar.onclick = async () => {
     return;
   }
   
-  console.log('🚀 Iniciando compilação híbrida...');
+  console.log('🚀 Iniciando compilação via API...');
   compileStatus.style.color = '#333';
   let progressInterval = startCompileProgressBar();
   
@@ -192,16 +192,6 @@ btnCompilar.onclick = async () => {
     const result = await compilarContrato(inputNome.value, btnCompilar, compileStatus, btnDeploy);
     console.log('✅ Compilação concluída:', result);
     stopCompileProgressBar(progressInterval, true);
-    
-    // Garantir que o botão de deploy seja habilitado
-    setTimeout(() => {
-      if (btnDeploy) {
-        btnDeploy.disabled = false;
-        btnDeploy.style.opacity = '1';
-        btnDeploy.style.cursor = 'pointer';
-        console.log('🎯 Botão de deploy definitivamente habilitado');
-      }
-    }, 500);
     
   } catch (error) {
     console.error('❌ Erro na compilação:', error);
