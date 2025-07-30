@@ -1,4 +1,4 @@
-import { adicionarTokenMetaMask, decodificarLinkToken, switchOrAddNetwork } from '../../token/js/metamask.js';
+import { adicionarTokenMetaMask, decodificarLinkToken, switchOrAddNetwork } from '../token/js/metamask.js';
 
 document.addEventListener('DOMContentLoaded', async function () {
   const decoded = decodificarLinkToken(window.location.search) || {};
