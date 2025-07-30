@@ -10,18 +10,32 @@ import { initNetworkCommons } from './network-commons.js';
 // Adiciona evento ao botão Conectar MetaMask
 const btnConectar = document.getElementById('connect-metamask-btn');
 if (btnConectar) {
-  btnConectar.addEventListener('click', () => {
-    connectMetaMask(inputOwner, networkDisplay);
+  btnConectar.addEventListener('click', async () => {
+    // Primeiro conecta MetaMask
+    await connectMetaMask(inputOwner, networkDisplay);
+    
+    // Depois detecta a rede
+    await detectNetworkAfterConnection();
+    
+    // Inicia monitoramento de mudanças (só após conexão)
+    listenMetaMask(inputOwner, networkDisplay);
   });
 }
 
-// Inicializa detecção de rede automaticamente
-async function initNetworkDetection() {
+// Inicializa apenas o sistema de redes (sem detectar automaticamente)
+async function initNetworkSystem() {
   try {
-    // Inicializa sistema de redes comum primeiro
+    // Apenas inicializa sistema de redes comum (sem detectar rede)
     await initNetworkCommons();
-    
-    // Depois detecta rede atual
+    console.log('🌐 Sistema de redes carregado, aguardando conexão do usuário...');
+  } catch (error) {
+    console.log('⚠️ Erro ao inicializar sistema de redes:', error);
+  }
+}
+
+// Detecta rede somente após conexão explícita do usuário
+async function detectNetworkAfterConnection() {
+  try {
     await detectCurrentNetwork();
     updateNetworkDisplay(networkDisplay);
     
@@ -30,7 +44,7 @@ async function initNetworkDetection() {
       setupNetworkMonitoring(networkDisplay);
     }
   } catch (error) {
-    console.log('MetaMask não conectado ainda, aguardando conexão...');
+    console.log('❌ Erro ao detectar rede:', error);
   }
 }
 
@@ -79,6 +93,12 @@ let currentStep = 1;
 // Garante que os botões começam desabilitados
 if (btnCompilar) btnCompilar.disabled = true;
 if (btnDeploy) btnDeploy.disabled = true;
+
+// Garante que o campo de rede comece vazio
+if (networkDisplay) {
+  networkDisplay.value = '';
+  networkDisplay.placeholder = 'Conecte sua carteira';
+}
 
 // -------------------- Navegação entre steps --------------------
 function showStep(step) {
@@ -384,8 +404,6 @@ btnDeploy.onclick = async () => {
   if (shareLinkField) shareLinkField.style.display = 'none';
 };
 
-listenMetaMask(inputOwner, networkDisplay);
-
 // -------------------- Busca Salt --------------------
 document.getElementById('search-salt-btn').onclick = () => buscarSaltFake(targetSuffix.value, saltFound, predictedAddress);
 document.getElementById('stop-search-btn').onclick = () => pararBuscaSalt();
@@ -405,8 +423,8 @@ if (radioPersonalizado) {
 showStep(1);
 toggleAddressCustomization();
 
-// Inicializa detecção de rede
-initNetworkDetection();
+// Inicializa apenas sistema de redes (sem detectar automaticamente)
+initNetworkSystem();
 
 // -------------------- Expor funções no window para HTML legacy (se necessário) --------------------
 window.toggleAddressCustomization = toggleAddressCustomization;

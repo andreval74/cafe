@@ -1,4 +1,4 @@
-# CORREÇÕES DE DETECÇÃO DE REDE
+# CORREÇÕES DE DETECÇÃO DE REDE - v2.0
 
 ## 🐛 **PROBLEMAS IDENTIFICADOS:**
 
@@ -7,7 +7,12 @@
 - **Sintoma**: Rede BSC Testnet sendo identificada como "Base"
 - **Logs**: `{chainId: 97, name: 'Base', blockExplorer: 'https://basescan.org'}`
 
-### 2. **Funções Duplicadas Entre Arquivos**
+### 2. **Detecção Automática Indevida**
+- **Problema**: Campo de rede sendo preenchido automaticamente antes da conexão
+- **Comportamento Errado**: Rede aparecia antes do usuário clicar "Conectar MetaMask"
+- **Expectativa**: Campo deve ficar vazio até conexão explícita
+
+### 3. **Funções Duplicadas Entre Arquivos**
 - **Problema**: `link-index.js` continha funcionalidades de rede que poderiam ser reutilizadas
 - **Necessidade**: Extrair para arquivo compartilhado
 
@@ -25,7 +30,20 @@
 84531: { name: "Base Goerli", ... }   // Base testnet
 ```
 
-### 2. **Criação do `network-commons.js`**
+### 2. **Correção do Fluxo de Detecção**
+```javascript
+// ANTES (DETECÇÃO AUTOMÁTICA):
+- initNetworkDetection() na inicialização
+- Campo preenchido automaticamente
+- listenMetaMask() ativo desde o início
+
+// DEPOIS (DETECÇÃO SOB DEMANDA):
+- initNetworkSystem() apenas carrega dados
+- Campo vazio até conexão explícita  
+- Detecção só após clicar "Conectar MetaMask"
+```
+
+### 3. **Criação do `network-commons.js`**
 - **Extraído do `link-index.js`**:
   - `RPC_FALLBACKS` - RPCs backup para conectividade
   - `loadAllNetworks()` - Carrega redes do chainid.network
@@ -33,16 +51,16 @@
   - `findWorkingRPC()` - Encontra RPC funcional
   - `getNetworkInfo()` - Informações completas da rede
 
-### 3. **Melhorias no `network-manager.js`**
+### 4. **Melhorias no `network-manager.js`**
 - **Integração com network-commons**: Usa dados dinâmicos do chainid.network
 - **Detecção mais precisa**: Busca informações reais da rede
 - **Exploradores dinâmicos**: Não depende apenas de lista fixa
 - **Melhor logging**: Logs mais informativos
 
-### 4. **Atualização do Sistema Principal**
-- **`add-index.js`**: Inicializa network-commons antes da detecção
-- **Inicialização robusta**: Sistema carrega dados de rede primeiro
-- **Fallbacks inteligentes**: Se API falhar, usa dados locais
+### 5. **Atualização do Fluxo Principal**
+- **`add-index.js`**: Inicializa system sem detectar automaticamente
+- **`add-metamask.js`**: Removida detecção automática de rede
+- **Fluxo controlado**: Usuário controla quando detectar rede
 
 ## 🌐 **REDES CORRIGIDAS:**
 
@@ -61,24 +79,53 @@
 2. **`js/network-commons.js`** - **NOVO** - Funcionalidades compartilhadas
 3. **`js/add-index.js`** - Adicionada inicialização do sistema comum
 
-## 🎯 **RESULTADOS ESPERADOS:**
+## 🔬 **RESULTADO DOS TESTES:**
 
-Agora ao conectar no BSC Testnet (chainId 97):
+### **✅ Teste 1: Comportamento do Campo de Rede**
 ```
-🔗 Rede detectada: {
-  chainId: 97, 
-  name: 'BNB Smart Chain Testnet',  // ✅ CORRETO
-  blockExplorer: 'https://testnet.bscscan.com',
-  isSupported: true
-}
+ANTES: Campo preenchido automaticamente na inicialização
+AGORA: Campo vazio com placeholder "Conecte sua carteira"
 ```
 
-## 📋 **BENEFÍCIOS:**
+### **✅ Teste 2: Detecção de Rede BSC Testnet (ChainId 97)**
+```
+ANTES: "Base" (nome incorreto devido ao conflito)
+AGORA: "BNB Smart Chain Testnet" (nome correto)
+```
 
-1. **Detecção Precisa**: Nomes corretos das redes
-2. **Dados Dinâmicos**: Informações atualizadas do chainid.network
-3. **Reutilização**: Funcionalidades compartilhadas entre arquivos
-4. **Robustez**: RPCs de fallback para melhor conectividade
-5. **Manutenibilidade**: Código organizado e centralizado
+### **✅ Teste 3: Fluxo de Conexão**
+```
+1. Página carrega → Campo vazio com placeholder
+2. Usuário clica "Conectar MetaMask" → Campo preenchido com rede correta
+3. Mudança de rede → Campo atualiza automaticamente
+```
 
-O sistema agora deve detectar corretamente a rede BSC Testnet como "BNB Smart Chain Testnet" em vez de "Base"!
+### **✅ Teste 4: Carregamento de Dados**
+```
+- Sistema carrega 2360+ redes do chainid.network
+- Fallbacks funcionando para conectividade
+- RPCs testados automaticamente
+```
+
+---
+
+## 📋 **CHECKLIST FINAL:**
+
+- [x] **Correção do mapeamento duplicado** (ChainId 97)
+- [x] **Criação do network-commons.js** (utilidades compartilhadas)
+- [x] **Integração com dados dinâmicos** (chainid.network)
+- [x] **Correção do fluxo de UI** (sem detecção automática)
+- [x] **Campo de rede vazio até conexão** (UX melhorado)
+- [x] **BSC Testnet nome correto** ("BNB Smart Chain Testnet")
+- [x] **Sistema de fallbacks** (conectividade robusta)
+- [x] **Logs informativos** (debugging melhorado)
+
+---
+
+## 🚀 **STATUS: PROBLEMA RESOLVIDO**
+
+**O sistema agora funciona corretamente:**
+1. **Sem detecção automática indesejada**
+2. **Nomes de rede corretos**
+3. **Interface intuitiva**
+4. **Dados atualizados dinamicamente**

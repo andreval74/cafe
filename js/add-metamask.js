@@ -21,7 +21,9 @@ export async function connectMetaMask(inputOwner, networkDisplay) {
       inputOwner.readOnly = false;
       inputOwner.style.background = "#e9f7ef";
     }
-    if (networkDisplay) networkDisplay.value = chainId;
+    // NÃO preenche automaticamente o campo de rede - será feito pelo network-manager
+    // if (networkDisplay) networkDisplay.value = chainId;
+    
     const btn = document.getElementById('connect-metamask-btn');
     if (btn) btn.style.display = "none";
     const info = document.getElementById('connected-wallet-info');
@@ -37,11 +39,14 @@ export async function connectMetaMask(inputOwner, networkDisplay) {
  */
 export function listenMetaMask(inputOwner, networkDisplay) {
   if (!window.ethereum) return;
+  
   window.ethereum.on('accountsChanged', function (accounts) {
     if (accounts[0] && inputOwner) inputOwner.value = accounts[0];
   });
-  window.ethereum.on('chainChanged', function (chainId) {
-    if (networkDisplay) networkDisplay.value = chainId;
+  
+  window.ethereum.on('chainChanged', async function (chainId) {
+    // Não preenche automaticamente - deixa o network-manager detectar
+    console.log('🔄 Rede alterada, network-manager detectará automaticamente...');
   });
 }
 
