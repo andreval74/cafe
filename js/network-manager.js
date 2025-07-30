@@ -67,14 +67,23 @@ export function updateNetworkDisplay(element) {
   if (!element) return;
   
   if (currentNetwork) {
-    element.textContent = currentNetwork.name;
-    element.style.color = currentNetwork.isSupported ? '#16924b' : '#b91c1c';
+    // Se for um input, usa value, senão usa textContent
+    if (element.tagName === 'INPUT') {
+      element.value = currentNetwork.name;
+    } else {
+      element.textContent = currentNetwork.name;
+    }
+    element.style.color = currentNetwork.isSupported !== false ? '#16924b' : '#b91c1c';
     
-    if (!currentNetwork.isSupported) {
+    if (currentNetwork.isSupported === false) {
       element.title = 'Rede não suportada para verificação automática';
     }
   } else {
-    element.textContent = 'Não conectado';
+    if (element.tagName === 'INPUT') {
+      element.value = 'Não conectado';
+    } else {
+      element.textContent = 'Não conectado';
+    }
     element.style.color = '#666';
   }
 }

@@ -3,7 +3,7 @@ import { salvarContrato, compilarContrato, contratoSource, debugContractState } 
 import { deployContrato } from './add-deploy.js';
 import { connectMetaMask, listenMetaMask, adicionarTokenMetaMask, montarTokenData, gerarLinkToken, switchOrAddNetwork } from './add-metamask.js';
 import { buscarSaltFake, pararBuscaSalt } from './add-salt.js';
-import { detectCurrentNetwork, currentNetwork, initNetworkWatcher } from './network-manager.js';
+import { detectCurrentNetwork, currentNetwork, setupNetworkMonitoring, updateNetworkDisplay } from './network-manager.js';
 import { showVerificationInterface } from './verification-ui.js';
 
 // Adiciona evento ao botão Conectar MetaMask
@@ -14,35 +14,15 @@ if (btnConectar) {
   });
 }
 
-// Função para atualizar display da rede
-function updateNetworkDisplay() {
-  if (currentNetwork && networkDisplay) {
-    networkDisplay.value = currentNetwork.name;
-    networkDisplay.style.color = '#16924b';
-    
-    // Atualiza ícone se existir
-    const networkIcon = document.getElementById('network-icon');
-    if (networkIcon) {
-      networkIcon.textContent = '🌐';
-      networkIcon.style.color = '#16924b';
-    }
-    
-    console.log('🌐 Rede detectada:', currentNetwork.name);
-  } else if (networkDisplay) {
-    networkDisplay.value = 'Conecte o MetaMask';
-    networkDisplay.style.color = '#666';
-  }
-}
-
 // Inicializa detecção de rede automaticamente
 async function initNetworkDetection() {
   try {
     await detectCurrentNetwork();
-    updateNetworkDisplay();
+    updateNetworkDisplay(networkDisplay);
     
-    // Inicia watcher para mudanças de rede
-    if (typeof initNetworkWatcher === 'function') {
-      initNetworkWatcher(updateNetworkDisplay);
+    // Inicia monitoramento para mudanças de rede
+    if (typeof setupNetworkMonitoring === 'function') {
+      setupNetworkMonitoring(networkDisplay);
     }
   } catch (error) {
     console.log('MetaMask não conectado ainda, aguardando conexão...');
