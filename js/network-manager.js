@@ -1,28 +1,10 @@
 // Gerenciador de Redes - Detecta e gerencia informações de blockchain
-// Versão 2.1.0 - Sistema de detecção automática de rede
+// Versão 2.2.0 - Sistema de detecção automática de rede + network-commons
+
+import { findNetworkByChainId, initNetworkCommons, getNetworkInfo } from './network-commons.js';
 
 export let currentNetwork = null;
 export let deployedContract = null;
-
-// Mapeamento de redes conhecidas
-const NETWORKS = {
-  1: { name: "Ethereum Mainnet", blockExplorer: "https://etherscan.io", verificationEndpoint: "https://api.etherscan.io/api" },
-  5: { name: "Ethereum Goerli", blockExplorer: "https://goerli.etherscan.io", verificationEndpoint: "https://api-goerli.etherscan.io/api" },
-  11155111: { name: "Ethereum Sepolia", blockExplorer: "https://sepolia.etherscan.io", verificationEndpoint: "https://api-sepolia.etherscan.io/api" },
-  56: { name: "BNB Smart Chain", blockExplorer: "https://bscscan.com", verificationEndpoint: "https://api.bscscan.com/api" },
-  97: { name: "BNB Testnet", blockExplorer: "https://testnet.bscscan.com", verificationEndpoint: "https://api-testnet.bscscan.com/api" },
-  137: { name: "Polygon Mainnet", blockExplorer: "https://polygonscan.com", verificationEndpoint: "https://api.polygonscan.com/api" },
-  80001: { name: "Polygon Mumbai", blockExplorer: "https://mumbai.polygonscan.com", verificationEndpoint: "https://api-testnet.polygonscan.com/api" },
-  43114: { name: "Avalanche C-Chain", blockExplorer: "https://snowtrace.io", verificationEndpoint: "https://api.snowtrace.io/api" },
-  43113: { name: "Avalanche Fuji", blockExplorer: "https://testnet.snowtrace.io", verificationEndpoint: "https://api-testnet.snowtrace.io/api" },
-  250: { name: "Fantom Opera", blockExplorer: "https://ftmscan.com", verificationEndpoint: "https://api.ftmscan.com/api" },
-  4002: { name: "Fantom Testnet", blockExplorer: "https://testnet.ftmscan.com", verificationEndpoint: "https://api-testnet.ftmscan.com/api" },
-  42161: { name: "Arbitrum One", blockExplorer: "https://arbiscan.io", verificationEndpoint: "https://api.arbiscan.io/api" },
-  421613: { name: "Arbitrum Goerli", blockExplorer: "https://goerli.arbiscan.io", verificationEndpoint: "https://api-goerli.arbiscan.io/api" },
-  10: { name: "Optimism", blockExplorer: "https://optimistic.etherscan.io", verificationEndpoint: "https://api-optimistic.etherscan.io/api" },
-  97: { name: "Base", blockExplorer: "https://basescan.org", verificationEndpoint: "https://api.basescan.org/api" },
-  8453: { name: "Base Mainnet", blockExplorer: "https://basescan.org", verificationEndpoint: "https://api.basescan.org/api" }
-};
 
 /**
  * Detecta a rede atual conectada no MetaMask
@@ -37,18 +19,40 @@ export async function detectCurrentNetwork() {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const network = await provider.getNetwork();
     
-    const networkInfo = NETWORKS[network.chainId] || {
-      name: `Rede Desconhecida (Chain ID: ${network.chainId})`,
-      blockExplorer: null,
-      verificationEndpoint: null
+    // Busca informações detalhadas da rede
+    const networkInfo = await getNetworkInfo(network.chainId);
+    
+    // Mapeia para exploradores de bloco conhecidos para verificação
+    const verificationEndpoints = {
+      1: "https://api.etherscan.io/api",
+      5: "https://api-goerli.etherscan.io/api", 
+      11155111: "https://api-sepolia.etherscan.io/api",
+      56: "https://api.bscscan.com/api",
+      97: "https://api-testnet.bscscan.com/api",
+      137: "https://api.polygonscan.com/api",
+      80001: "https://api-testnet.polygonscan.com/api",
+      43114: "https://api.snowtrace.io/api",
+      43113: "https://api-testnet.snowtrace.io/api",
+      250: "https://api.ftmscan.com/api",
+      4002: "https://api-testnet.ftmscan.com/api",
+      42161: "https://api.arbiscan.io/api",
+      421613: "https://api-goerli.arbiscan.io/api",
+      10: "https://api-optimistic.etherscan.io/api",
+      8453: "https://api.basescan.org/api",
+      84531: "https://api-goerli.basescan.org/api"
     };
+
+    const blockExplorer = networkInfo.explorers && networkInfo.explorers.length > 0 
+      ? networkInfo.explorers[0].url 
+      : null;
 
     currentNetwork = {
       chainId: network.chainId,
       name: networkInfo.name,
-      blockExplorer: networkInfo.blockExplorer,
-      verificationEndpoint: networkInfo.verificationEndpoint,
-      isSupported: !!networkInfo.blockExplorer
+      blockExplorer: blockExplorer,
+      verificationEndpoint: verificationEndpoints[network.chainId] || null,
+      isSupported: !!verificationEndpoints[network.chainId],
+      nativeCurrency: networkInfo.nativeCurrency
     };
 
     console.log('🔗 Rede detectada:', currentNetwork);

@@ -5,6 +5,7 @@ import { connectMetaMask, listenMetaMask, adicionarTokenMetaMask, montarTokenDat
 import { buscarSaltFake, pararBuscaSalt } from './add-salt.js';
 import { detectCurrentNetwork, currentNetwork, setupNetworkMonitoring, updateNetworkDisplay } from './network-manager.js';
 import { showVerificationInterface } from './verification-ui.js';
+import { initNetworkCommons } from './network-commons.js';
 
 // Adiciona evento ao botão Conectar MetaMask
 const btnConectar = document.getElementById('connect-metamask-btn');
@@ -17,6 +18,10 @@ if (btnConectar) {
 // Inicializa detecção de rede automaticamente
 async function initNetworkDetection() {
   try {
+    // Inicializa sistema de redes comum primeiro
+    await initNetworkCommons();
+    
+    // Depois detecta rede atual
     await detectCurrentNetwork();
     updateNetworkDisplay(networkDisplay);
     
