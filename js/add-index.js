@@ -11,15 +11,35 @@ import { initNetworkCommons } from './network-commons.js';
 const btnConectar = document.getElementById('connect-metamask-btn');
 if (btnConectar) {
   btnConectar.addEventListener('click', async () => {
-    // Primeiro conecta MetaMask
-    await connectMetaMask(inputOwner);
+    console.log('🔗 Iniciando conexão MetaMask...');
     
-    // Depois detecta a rede
-    await detectNetworkAfterConnection();
+    // Atualiza status
+    if (walletStatus) walletStatus.value = 'Conectando...';
     
-    // Inicia monitoramento de mudanças (só após conexão)
-    listenMetaMask(inputOwner);
+    try {
+      // Primeiro conecta MetaMask
+      await connectMetaMask(inputOwner);
+      console.log('✅ MetaMask conectado');
+      
+      // Depois detecta a rede
+      await detectNetworkAfterConnection();
+      console.log('✅ Rede detectada');
+      
+      // Inicia monitoramento de mudanças (só após conexão)
+      listenMetaMask(inputOwner);
+      console.log('✅ Monitoramento iniciado');
+      
+      // Atualiza interface
+      updateConnectionInterface();
+      console.log('✅ Interface atualizada');
+      
+    } catch (error) {
+      console.error('❌ Erro na conexão:', error);
+      if (walletStatus) walletStatus.value = 'Erro na conexão. Tente novamente.';
+    }
   });
+} else {
+  console.warn('⚠️ Botão conectar não encontrado');
 }
 
 // Inicializa apenas o sistema de redes (sem detectar automaticamente)
@@ -46,6 +66,43 @@ async function detectNetworkAfterConnection() {
   } catch (error) {
     console.log('❌ Erro ao detectar rede:', error);
   }
+}
+
+// Atualiza a interface de conexão com as informações
+function updateConnectionInterface() {
+  console.log('🔄 Atualizando interface de conexão...');
+  
+  if (walletStatus) {
+    walletStatus.value = 'Carteira conectada com sucesso!';
+    console.log('✅ Status da carteira atualizado');
+  }
+  
+  if (connectionInfo) {
+    connectionInfo.style.display = 'block';
+    console.log('✅ Info de conexão exibida');
+  }
+  
+  if (ownerDisplay && inputOwner && inputOwner.value) {
+    const address = inputOwner.value;
+    ownerDisplay.textContent = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : '-';
+    console.log('✅ Display do proprietário atualizado:', ownerDisplay.textContent);
+  }
+  
+  if (networkDisplayInfo) {
+    // Pega o nome da rede do campo oculto ou usa valor padrão
+    const networkName = networkDisplay ? networkDisplay.value : 'Detectando...';
+    networkDisplayInfo.textContent = networkName;
+    console.log('✅ Display da rede atualizado:', networkName);
+  }
+  
+  // Oculta o botão conectar
+  const btnConectar = document.getElementById('connect-metamask-btn');
+  if (btnConectar) {
+    btnConectar.style.display = 'none';
+    console.log('✅ Botão conectar ocultado');
+  }
+  
+  console.log('🎉 Interface de conexão atualizada com sucesso!');
 }
 
 // Listener para evento de deploy concluído
@@ -87,25 +144,42 @@ const btnVerificationInfo = document.getElementById('btn-verification-info');
 const nextStep4 = document.getElementById('next-step-4');
 const compileStatus = document.getElementById('compile-status');
 const deployStatus = document.getElementById('deploy-status');
-const networkDisplay = document.getElementById('networkDisplay');
-const networkValue = document.getElementById('networkValue'); // Campo oculto
-const networkInfo = document.querySelector('.network-info'); // Container da info de rede
+
+// Elementos do novo layout
+const walletStatus = document.getElementById('wallet-status');
+const connectionInfo = document.getElementById('connection-info');
+const ownerDisplay = document.getElementById('owner-display');
+const networkDisplayInfo = document.getElementById('network-display-info');
+const networkValue = document.getElementById('networkValue');
+const networkDisplay = document.getElementById('networkDisplay'); // Campo oculto
+
 let currentStep = 1;
 
 // Garante que os botões começam desabilitados
 if (btnCompilar) btnCompilar.disabled = true;
 if (btnDeploy) btnDeploy.disabled = true;
 
-// Inicializa exibição da rede
-if (networkDisplay && networkInfo) {
-  networkDisplay.textContent = 'Conecte sua carteira';
-  networkInfo.style.display = 'none'; // Oculta até conectar
+// Inicializa o novo layout de conexão (com verificações defensivas)
+if (walletStatus) {
+  walletStatus.value = 'Clique em "Conectar" para iniciar';
 }
 
-// Inicializa campo oculto da rede
-if (networkValue) {
-  networkValue.value = '';
+if (connectionInfo) {
+  connectionInfo.style.display = 'none';
 }
+
+// Inicializa campos ocultos (com verificações defensivas)
+if (networkValue) networkValue.value = '';
+if (networkDisplay) networkDisplay.value = '';
+
+console.log('🚀 Interface inicializada:', {
+  walletStatus: !!walletStatus,
+  connectionInfo: !!connectionInfo,
+  ownerDisplay: !!ownerDisplay,
+  networkDisplayInfo: !!networkDisplayInfo,
+  networkValue: !!networkValue,
+  networkDisplay: !!networkDisplay
+});
 
 // -------------------- Navegação entre steps --------------------
 function showStep(step) {
@@ -136,19 +210,23 @@ function reiniciarFluxo() {
     else field.value = "";
   });
   inputDecimals.value = '18';
-  document.getElementById('connect-metamask-btn').style.display = "";
-  document.getElementById('connected-wallet-info').style.display = "none";
-  inputOwner.readOnly = true;
   
-  // Reinicializa exibição da rede
-  if (networkDisplay && networkInfo) {
-    networkDisplay.textContent = 'Conecte sua carteira';
-    networkInfo.style.display = 'none';
-  }
-  if (networkValue) {
-    networkValue.value = '';
-  }
+  // Reinicializa interface de conexão (com verificações defensivas)
+  const btnConectar = document.getElementById('connect-metamask-btn');
+  if (btnConectar) btnConectar.style.display = 'block';
   
+  if (walletStatus) walletStatus.value = 'Clique em "Conectar" para iniciar';
+  if (connectionInfo) connectionInfo.style.display = 'none';
+  if (ownerDisplay) ownerDisplay.textContent = '-';
+  if (networkDisplayInfo) networkDisplayInfo.textContent = '-';
+  
+  if (inputOwner) inputOwner.readOnly = true;
+  
+  // Reinicializa campos ocultos (com verificações defensivas)
+  if (networkDisplay) networkDisplay.value = '';
+  if (networkValue) networkValue.value = '';
+  
+  console.log('🔄 Interface reinicializada');
   showStep(1);
 }
 
@@ -181,7 +259,7 @@ function fillResumo() {
     <strong>Total Supply:</strong> ${inputSupply.value}<br>
     <strong>Proprietário:</strong> ${ownerChecksum}<br>
     <strong>Logo:</strong> ${inputImage.value || "-"}<br>
-    <strong>Rede:</strong> ${networkDisplay ? networkDisplay.textContent : "Não detectada"}<br>
+    <strong>Rede:</strong> ${networkDisplay ? networkDisplay.value : "Não detectada"}<br>
     <strong>Tipo de Endereço:</strong> ${(radioPersonalizado && radioPersonalizado.checked) ? "Personalizado" : "Padrão"}
   `;
 }
@@ -444,11 +522,24 @@ if (radioPersonalizado) {
 }
 
 // -------------------- Inicialização --------------------
-showStep(1);
-toggleAddressCustomization();
+// Aguarda DOM estar pronto antes de inicializar
+document.addEventListener('DOMContentLoaded', () => {
+  showStep(1);
+  toggleAddressCustomization();
+  
+  // Inicializa apenas sistema de redes (sem detectar automaticamente)
+  initNetworkSystem();
+});
 
-// Inicializa apenas sistema de redes (sem detectar automaticamente)
-initNetworkSystem();
+// Se DOM já estiver pronto (no caso de module loading)
+if (document.readyState === 'loading') {
+  // DOM ainda carregando, aguarda evento
+} else {
+  // DOM já pronto, executa imediatamente
+  showStep(1);
+  toggleAddressCustomization();
+  initNetworkSystem();
+}
 
 // -------------------- Expor funções no window para HTML legacy (se necessário) --------------------
 window.toggleAddressCustomization = toggleAddressCustomization;

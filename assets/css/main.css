@@ -3166,6 +3166,86 @@ section,
    SCCAFE - Melhorias de UX
    ============================== */
 
+/* Seção de conexão no topo */
+.connection-section {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 2px solid #dee2e6;
+  border-radius: 12px;
+  padding: 1.5em;
+  margin-bottom: 2em;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.connection-container {
+  display: flex;
+  gap: 0.75em;
+  align-items: center;
+}
+
+.connection-container input {
+  flex: 1;
+  padding: 0.75em 1em;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  background: white;
+  font-size: 0.95em;
+}
+
+.connect-btn {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  border: none;
+  padding: 0.75em 1.5em;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  min-width: 160px;
+}
+
+.connect-btn:hover {
+  background: linear-gradient(135deg, #218838 0%, #1ba385 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.connect-btn:active {
+  transform: translateY(0);
+}
+
+/* Informações da conexão */
+.connection-info {
+  margin-top: 1em;
+  padding: 1em;
+  background: rgba(40, 167, 69, 0.05);
+  border: 1px solid rgba(40, 167, 69, 0.2);
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1em;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
+}
+
+.info-label {
+  font-size: 0.85em;
+  font-weight: 600;
+  color: #495057;
+}
+
+.info-value {
+  font-size: 0.9em;
+  color: #28a745;
+  font-weight: 500;
+  font-family: 'Courier New', monospace;
+  word-break: break-all;
+}
+
 /* Container do botão próximo com info de rede */
 .next-step-container {
   display: flex;
@@ -3193,6 +3273,19 @@ section,
 
 /* Responsividade para telas menores */
 @media (max-width: 768px) {
+  .connection-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .connect-btn {
+    min-width: auto;
+  }
+  
+  .connection-info {
+    grid-template-columns: 1fr;
+  }
+  
   .next-step-container {
     flex-direction: column;
     align-items: stretch;

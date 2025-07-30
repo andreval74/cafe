@@ -92,21 +92,22 @@ export function updateNetworkDisplay(element) {
 }
 
 /**
- * Atualiza o novo layout com informação da rede ao lado do botão
+ * Atualiza o novo layout com informação da rede
  */
 export function updateNetworkInfo() {
-  const networkDisplay = document.getElementById('networkDisplay');
+  const networkDisplay = document.getElementById('networkDisplay'); // Campo oculto
   const networkValue = document.getElementById('networkValue');
-  const networkInfo = document.querySelector('.network-info');
+  const networkDisplayInfo = document.getElementById('network-display-info'); // Display visual
+  const ownerDisplay = document.getElementById('owner-display');
+  const inputOwner = document.getElementById('ownerAddress');
   
   if (currentNetwork) {
-    // Atualiza o display visual
+    // Atualiza o campo oculto (para compatibilidade)
     if (networkDisplay) {
-      networkDisplay.textContent = currentNetwork.name;
-      networkDisplay.style.color = currentNetwork.isSupported !== false ? '#16924b' : '#b91c1c';
+      networkDisplay.value = currentNetwork.name;
     }
     
-    // Atualiza o campo oculto para o sistema
+    // Atualiza o campo oculto com dados completos para o sistema
     if (networkValue) {
       networkValue.value = JSON.stringify({
         chainId: currentNetwork.chainId,
@@ -115,23 +116,36 @@ export function updateNetworkInfo() {
       });
     }
     
-    // Mostra a informação da rede
-    if (networkInfo) {
-      networkInfo.style.display = 'block';
+    // Atualiza o display visual na seção de conexão
+    if (networkDisplayInfo) {
+      networkDisplayInfo.textContent = currentNetwork.name;
+      networkDisplayInfo.style.color = currentNetwork.isSupported !== false ? '#28a745' : '#dc3545';
     }
+    
+    // Atualiza o display do proprietário se disponível
+    if (ownerDisplay && inputOwner && inputOwner.value) {
+      const address = inputOwner.value;
+      ownerDisplay.textContent = `${address.slice(0, 6)}...${address.slice(-4)}`;
+    }
+    
+    console.log('✅ Interface atualizada com:', currentNetwork.name);
   } else {
     // Estado desconectado
     if (networkDisplay) {
-      networkDisplay.textContent = 'Conecte sua carteira';
-      networkDisplay.style.color = '#666';
+      networkDisplay.value = '';
     }
     
     if (networkValue) {
       networkValue.value = '';
     }
     
-    if (networkInfo) {
-      networkInfo.style.display = 'none';
+    if (networkDisplayInfo) {
+      networkDisplayInfo.textContent = 'Não conectado';
+      networkDisplayInfo.style.color = '#6c757d';
+    }
+    
+    if (ownerDisplay) {
+      ownerDisplay.textContent = '-';
     }
   }
 }
