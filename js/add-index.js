@@ -1,8 +1,10 @@
 import { marcarConcluido, clearErrors, markErrors } from './add-utils.js';
-import { salvarContrato, compilarContrato, contratoSource, debugContractState, showVerificationInfo } from './add-contratos-verified.js';
+import { salvarContrato, compilarContrato, contratoSource, debugContractState } from './add-contratos-verified.js';
 import { deployContrato } from './add-deploy.js';
 import { connectMetaMask, listenMetaMask, adicionarTokenMetaMask, montarTokenData, gerarLinkToken, switchOrAddNetwork } from './add-metamask.js';
 import { buscarSaltFake, pararBuscaSalt } from './add-salt.js';
+import { detectCurrentNetwork, currentNetwork, initNetworkWatcher } from './network-manager.js';
+import { showVerificationInterface } from './verification-ui.js';
 
 // Adiciona evento ao botão Conectar MetaMask
 const btnConectar = document.getElementById('connect-metamask-btn');
@@ -11,6 +13,57 @@ if (btnConectar) {
     connectMetaMask(inputOwner, networkDisplay);
   });
 }
+
+// Função para atualizar display da rede
+function updateNetworkDisplay() {
+  if (currentNetwork && networkDisplay) {
+    networkDisplay.value = currentNetwork.name;
+    networkDisplay.style.color = '#16924b';
+    
+    // Atualiza ícone se existir
+    const networkIcon = document.getElementById('network-icon');
+    if (networkIcon) {
+      networkIcon.textContent = '🌐';
+      networkIcon.style.color = '#16924b';
+    }
+    
+    console.log('🌐 Rede detectada:', currentNetwork.name);
+  } else if (networkDisplay) {
+    networkDisplay.value = 'Conecte o MetaMask';
+    networkDisplay.style.color = '#666';
+  }
+}
+
+// Inicializa detecção de rede automaticamente
+async function initNetworkDetection() {
+  try {
+    await detectCurrentNetwork();
+    updateNetworkDisplay();
+    
+    // Inicia watcher para mudanças de rede
+    if (typeof initNetworkWatcher === 'function') {
+      initNetworkWatcher(updateNetworkDisplay);
+    }
+  } catch (error) {
+    console.log('MetaMask não conectado ainda, aguardando conexão...');
+  }
+}
+
+// Listener para evento de deploy concluído
+window.addEventListener('contractDeployed', (event) => {
+  const deployedInfo = event.detail;
+  console.log('📄 Contrato deployado:', deployedInfo);
+  
+  // Mostra botão de verificação
+  const verificationBtn = document.getElementById('btn-verification-info');
+  if (verificationBtn) {
+    verificationBtn.style.display = 'inline-block';
+    verificationBtn.disabled = false;
+    verificationBtn.onclick = () => {
+      showVerificationInterface(deployedInfo);
+    };
+  }
+});
 
 
 
@@ -366,6 +419,9 @@ if (radioPersonalizado) {
 // -------------------- Inicialização --------------------
 showStep(1);
 toggleAddressCustomization();
+
+// Inicializa detecção de rede
+initNetworkDetection();
 
 // -------------------- Expor funções no window para HTML legacy (se necessário) --------------------
 window.toggleAddressCustomization = toggleAddressCustomization;

@@ -225,6 +225,14 @@
       box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
     }
     
+    .btn-info {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    }
+    
+    .btn-info:hover:not(:disabled) {
+      box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+    }
+    
     .navigation {
       display: flex;
       justify-content: space-between;
