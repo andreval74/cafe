@@ -194,6 +194,8 @@ if (btnAddMetaMask) btnAddMetaMask.disabled = true;
 if (btnShareLink) btnShareLink.style.display = 'none';
 if (shareLinkField) shareLinkField.style.display = 'none';
 
+import { switchOrAddNetwork } from './metamask.js';
+
 if (btnAddMetaMask) {
   btnAddMetaMask.onclick = async function() {
     statusDiv.textContent = '';
@@ -203,6 +205,23 @@ if (btnAddMetaMask) {
       const symbol = document.getElementById('final-token-symbol').value;
       const decimals = parseInt(document.getElementById('final-token-decimals').value, 10);
       const image = document.getElementById('final-token-image').value;
+      // Recupera chainId e dados de rede se disponíveis
+      let chainId = networkDisplay.value;
+      let tokenData = { address, symbol, decimals, image };
+      if (chainId) {
+        tokenData.chainId = chainId.startsWith('0x') ? parseInt(chainId, 16) : parseInt(chainId);
+      }
+      // Tenta trocar para a rede correta antes de adicionar
+      let switched = true;
+      if (tokenData.chainId) {
+        switched = await switchOrAddNetwork(tokenData);
+      }
+      if (!switched) {
+        statusDiv.textContent = 'Não foi possível trocar para a rede do token.';
+        statusDiv.style.color = '#b91c1c';
+        btnAddMetaMask.disabled = false;
+        return;
+      }
       const result = await adicionarTokenMetaMask({ address, symbol, decimals, image });
       if (result) {
         statusDiv.textContent = 'Token adicionado ao MetaMask!';
@@ -227,14 +246,25 @@ if (btnShareLink) {
     const decimals = parseInt(document.getElementById('final-token-decimals').value, 10);
     const image = document.getElementById('final-token-image').value;
     const link = gerarLinkToken({ address, symbol, decimals, image });
-    shareLinkField.value = link;
-    shareLinkField.style.display = 'block';
-    shareLinkField.select();
-    document.execCommand('copy');
-    btnShareLink.textContent = '🔗 Link Copiado!';
-    setTimeout(() => {
-      btnShareLink.textContent = '🔗 Compartilhar Link';
-    }, 2000);
+    // Web Share API se disponível
+    if (navigator.share) {
+      navigator.share({
+        title: 'Token criado',
+        text: 'Veja o token que acabei de criar:',
+        url: link
+      }).catch(() => {
+        // fallback se usuário cancelar
+      });
+    } else {
+      shareLinkField.value = link;
+      shareLinkField.style.display = 'block';
+      shareLinkField.select();
+      document.execCommand('copy');
+      btnShareLink.textContent = '🔗 Link Copiado!';
+      setTimeout(() => {
+        btnShareLink.textContent = '🔗 Compartilhar Link';
+      }, 2000);
+    }
   };
 }
 

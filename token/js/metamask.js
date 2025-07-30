@@ -90,7 +90,21 @@ export async function adicionarTokenMetaMask({ address, symbol, decimals, image 
  * @returns {string} - link pronto para compartilhar
  */
 export function gerarLinkToken(tokenData) {
-  const encoded = btoa(JSON.stringify(tokenData));
+  // Garante compatibilidade com addtoken-link.html
+  const compatData = {
+    tokenAddress: tokenData.address || tokenData.tokenAddress || '',
+    tokenSymbol: tokenData.symbol || tokenData.tokenSymbol || '',
+    tokenName: tokenData.name || tokenData.tokenName || '',
+    tokenDecimals: tokenData.decimals || tokenData.tokenDecimals || 18,
+    tokenImage: tokenData.image || tokenData.tokenImage || '',
+    chainId: tokenData.chainId || '',
+    networkName: tokenData.networkName || tokenData.chainName || '',
+    rpcUrl: tokenData.rpcUrl || '',
+    blockExplorer: tokenData.blockExplorer || '',
+    nativeCurrency: tokenData.nativeCurrency || '',
+    nativeDecimals: tokenData.nativeDecimals || 18
+  };
+  const encoded = btoa(JSON.stringify(compatData));
   const baseUrl = window.location.origin + window.location.pathname.replace(/[^\/]*$/, 'addtoken-link.html');
   return `${baseUrl}?data=${encoded}`;
 }

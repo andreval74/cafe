@@ -158,25 +158,26 @@ function generateLink() {
         alert("Selecione uma rede válida antes de gerar o link!");
         return;
     }
-    const data = {
-        chainId: selectedNetwork.chainId, // CORRIGIDO: adicionado chainId
-        chainName: selectedNetwork.name,  // CORRIGIDO: adicionado chainName
-        rpcUrl: document.getElementById('rpcUrl').value,
-        blockExplorer: document.getElementById('blockExplorer').value,
-        nativeCurrency: document.getElementById('nativeCurrency').value,
-        nativeDecimals: document.getElementById('nativeDecimals').value,
-        tokenAddress: document.getElementById('tokenAddress').value,
-        tokenSymbol: document.getElementById('tokenSymbol').value,
-        tokenDecimals: document.getElementById('tokenDecimals').value,
-        tokenImage: document.getElementById('tokenImage').value,
-        tokenName: document.getElementById('tokenName') ? document.getElementById('tokenName').value : "",
-        networkName: document.getElementById('networkSearch') ? document.getElementById('networkSearch').value : ""
-    };
-    const encoded = btoa(JSON.stringify(data));
-    const baseUrl = window.location.origin + window.location.pathname.replace(/[^\/]*$/, 'addtoken-link.html');
-    const link = `${baseUrl}?data=${encoded}`;
-    document.getElementById('generatedLink').value = link;
-    showCopyAndShareButtons(true);
+    // Importa gerarLinkToken do módulo centralizado
+    import('../../token/js/metamask.js').then(({ gerarLinkToken }) => {
+        const data = {
+            chainId: selectedNetwork.chainId,
+            chainName: selectedNetwork.name,
+            rpcUrl: document.getElementById('rpcUrl').value,
+            blockExplorer: document.getElementById('blockExplorer').value,
+            nativeCurrency: document.getElementById('nativeCurrency').value,
+            nativeDecimals: document.getElementById('nativeDecimals').value,
+            tokenAddress: document.getElementById('tokenAddress').value,
+            tokenSymbol: document.getElementById('tokenSymbol').value,
+            tokenDecimals: document.getElementById('tokenDecimals').value,
+            tokenImage: document.getElementById('tokenImage').value,
+            tokenName: document.getElementById('tokenName') ? document.getElementById('tokenName').value : "",
+            networkName: document.getElementById('networkSearch') ? document.getElementById('networkSearch').value : ""
+        };
+        const link = gerarLinkToken(data);
+        document.getElementById('generatedLink').value = link;
+        showCopyAndShareButtons(true);
+    });
 }
 
 function copyLink() {
