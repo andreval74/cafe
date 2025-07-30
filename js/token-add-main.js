@@ -7,11 +7,11 @@ if (btnConectar) {
 }
 
 
-import { marcarConcluido, clearErrors, markErrors } from './utils.js';
-import { salvarContrato, compilarContrato, contratoSource } from './contratos.js';
-import { deployContrato } from './deploy.js';
-import { connectMetaMask, listenMetaMask, adicionarTokenMetaMask, montarTokenData, gerarLinkToken } from './metamask.js';
-import { buscarSaltFake, pararBuscaSalt } from './salt.js';
+import { marcarConcluido, clearErrors, markErrors } from './token-add-utils.js';
+import { salvarContrato, compilarContrato, contratoSource } from './token-add-contratos.js';
+import { deployContrato } from './token-add-deploy.js';
+import { connectMetaMask, listenMetaMask, adicionarTokenMetaMask, montarTokenData, gerarLinkToken } from '../token/js/token-add-metamask.js';
+import { buscarSaltFake, pararBuscaSalt } from './token-add-salt.js';
 
 
 
@@ -194,7 +194,7 @@ if (btnAddMetaMask) btnAddMetaMask.disabled = true;
 if (btnShareLink) btnShareLink.style.display = 'none';
 if (shareLinkField) shareLinkField.style.display = 'none';
 
-import { switchOrAddNetwork } from './metamask.js';
+import { switchOrAddNetwork } from '../token/js/token-add-metamask.js';
 
 if (btnAddMetaMask) {
   btnAddMetaMask.onclick = async function() {

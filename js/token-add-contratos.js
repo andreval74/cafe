@@ -1,7 +1,7 @@
 // contratos.js
 // Geração, substituição de variáveis e compilação do contrato Solidity via API
 
-import { marcarConcluido } from './utils.js';
+import { marcarConcluido } from './token-add-utils.js';
 
 export let contratoSource = "";
 export let contratoAbi = null;
