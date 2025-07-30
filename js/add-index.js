@@ -1,19 +1,16 @@
-// Adiciona evento ao botão Conectar MetaMask
-const btnConectar = document.getElementById('connect-metamask-btn');
-if (btnConectar) {
-  btnConectar.addEventListener('click', () => {
-    connectM  if (shareLinkField) shareLinkField.style.display = 'none';
-
-if (btnAddMetaMask) {sk(inputOwner, networkDisplay);
-  });
-}
-
-
 import { marcarConcluido, clearErrors, markErrors } from './add-utils.js';
 import { salvarContrato, compilarContrato, contratoSource } from './add-contratos.js';
 import { deployContrato } from './add-deploy.js';
 import { connectMetaMask, listenMetaMask, adicionarTokenMetaMask, montarTokenData, gerarLinkToken, switchOrAddNetwork } from './add-metamask.js';
 import { buscarSaltFake, pararBuscaSalt } from './add-salt.js';
+
+// Adiciona evento ao botão Conectar MetaMask
+const btnConectar = document.getElementById('connect-metamask-btn');
+if (btnConectar) {
+  btnConectar.addEventListener('click', () => {
+    connectMetaMask(inputOwner, networkDisplay);
+  });
+}
 
 
 
