@@ -159,7 +159,7 @@ function generateLink() {
         return;
     }
     // Importa gerarLinkToken do módulo centralizado
-    import('../token/js/metamask.js').then(({ gerarLinkToken }) => {
+    import('./add-metamask.js').then(({ gerarLinkToken }) => {
         const data = {
             chainId: selectedNetwork.chainId,
             chainName: selectedNetwork.name,

@@ -2,15 +2,17 @@
 const btnConectar = document.getElementById('connect-metamask-btn');
 if (btnConectar) {
   btnConectar.addEventListener('click', () => {
-    connectMetaMask(inputOwner, networkDisplay);
+    connectM  if (shareLinkField) shareLinkField.style.display = 'none';
+
+if (btnAddMetaMask) {sk(inputOwner, networkDisplay);
   });
 }
 
 
 import { marcarConcluido, clearErrors, markErrors } from './add-utils.js';
-import { salvarContrato, compilarContrato, contratoSource } from './token-add-contratos.js';
-import { deployContrato } from './token-add-deploy.js';
-import { connectMetaMask, listenMetaMask, adicionarTokenMetaMask, montarTokenData, gerarLinkToken } from '../token/js/token-add-metamask.js';
+import { salvarContrato, compilarContrato, contratoSource } from './add-contratos.js';
+import { deployContrato } from './add-deploy.js';
+import { connectMetaMask, listenMetaMask, adicionarTokenMetaMask, montarTokenData, gerarLinkToken, switchOrAddNetwork } from './add-metamask.js';
 import { buscarSaltFake, pararBuscaSalt } from './add-salt.js';
 
 
@@ -193,8 +195,6 @@ const statusDiv = document.getElementById('metamask-status');
 if (btnAddMetaMask) btnAddMetaMask.disabled = true;
 if (btnShareLink) btnShareLink.style.display = 'none';
 if (shareLinkField) shareLinkField.style.display = 'none';
-
-import { switchOrAddNetwork } from '../token/js/token-add-metamask.js';
 
 if (btnAddMetaMask) {
   btnAddMetaMask.onclick = async function() {

@@ -15,7 +15,7 @@ export let contratoName = null;
  */
 export async function salvarContrato(inputs, callback) {
   try {
-    const response = await fetch('contrato-base.sol');
+    const response = await fetch('contratos/contrato-base.sol');
     if (!response.ok) throw new Error('Não foi possível carregar o contrato-base.sol');
     let contrato = await response.text();
 
