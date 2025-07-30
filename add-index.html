@@ -33,31 +33,22 @@
     </div>
     <div class="content">
       <div class="step-content active" id="step-1">
-        <h2 class="step-title">📝 Dados Básicos do Token</h2>
-        <p class="step-description">Conecte sua carteira e preencha as informações do seu token.</p>
-
         <!-- Seção de Conexão no Topo -->
         <div class="connection-section">
           <div class="form-group">
             <label for="wallet-connection">🔗 Conexão da Carteira</label>
             <div class="connection-container">
               <input type="text" id="wallet-status" placeholder="Clique em 'Conectar' para iniciar" readonly>
-              <button id="connect-metamask-btn" type="button" class="connect-btn">Conectar MetaMask</button>
-            </div>
-          </div>
-          
-          <!-- Informações da Conexão (aparecem após conectar) -->
-          <div id="connection-info" class="connection-info" style="display:none;">
-            <div class="info-item">
-              <span class="info-label">👤 Proprietário:</span>
-              <span id="owner-display" class="info-value">-</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">🌐 Rede:</span>
-              <span id="network-display-info" class="info-value">-</span>
+              <button id="connect-metamask-btn" type="button" class="connect-btn">
+                <img src="imgs/metamask-fox.svg" alt="MetaMask" class="metamask-icon">
+                Conectar MetaMask
+              </button>
             </div>
           </div>
         </div>
+
+        <h2 class="step-title">📝 Dados Básicos do Token</h2>
+        <p class="step-description">Preencha as informações do seu token abaixo.</p>
 
         <div class="form-row">
           <div class="form-group">
@@ -81,7 +72,7 @@
         </div>
         <div class="form-group">
           <label for="ownerAddress">👤 Endereço do Proprietário</label>
-          <input type="text" id="ownerAddress" placeholder="Será preenchido automaticamente" required readonly>
+          <input type="text" id="ownerAddress" placeholder="Será preenchido após conectar carteira" required readonly>
         </div>
         <div class="form-group">
           <label for="tokenImage">🖼️ URL da Imagem do Token</label>

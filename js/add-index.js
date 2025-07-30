@@ -13,8 +13,11 @@ if (btnConectar) {
   btnConectar.addEventListener('click', async () => {
     console.log('🔗 Iniciando conexão MetaMask...');
     
+    // Adiciona classe de estado conectando
+    if (connectionSection) connectionSection.classList.add('connecting');
+    
     // Atualiza status
-    if (walletStatus) walletStatus.value = 'Conectando...';
+    if (walletStatus) walletStatus.value = 'Conectando com MetaMask...';
     
     try {
       // Primeiro conecta MetaMask
@@ -36,6 +39,7 @@ if (btnConectar) {
     } catch (error) {
       console.error('❌ Erro na conexão:', error);
       if (walletStatus) walletStatus.value = 'Erro na conexão. Tente novamente.';
+      if (connectionSection) connectionSection.classList.remove('connecting');
     }
   });
 } else {
@@ -72,34 +76,32 @@ async function detectNetworkAfterConnection() {
 function updateConnectionInterface() {
   console.log('🔄 Atualizando interface de conexão...');
   
+  // Remove estado de carregamento
+  if (connectionSection) {
+    connectionSection.classList.remove('connecting');
+    connectionSection.classList.add('connected-state');
+  }
+  
   if (walletStatus) {
     walletStatus.value = 'Carteira conectada com sucesso!';
     console.log('✅ Status da carteira atualizado');
   }
   
-  if (connectionInfo) {
-    connectionInfo.style.display = 'block';
-    console.log('✅ Info de conexão exibida');
+  // Preenche o campo proprietário e marca como preenchido
+  if (inputOwner && inputOwner.value) {
+    inputOwner.classList.add('filled');
+    console.log('✅ Campo proprietário preenchido e marcado');
   }
   
-  if (ownerDisplay && inputOwner && inputOwner.value) {
-    const address = inputOwner.value;
-    ownerDisplay.textContent = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : '-';
-    console.log('✅ Display do proprietário atualizado:', ownerDisplay.textContent);
-  }
-  
-  if (networkDisplayInfo) {
-    // Pega o nome da rede do campo oculto ou usa valor padrão
-    const networkName = networkDisplay ? networkDisplay.value : 'Detectando...';
-    networkDisplayInfo.textContent = networkName;
-    console.log('✅ Display da rede atualizado:', networkName);
-  }
-  
-  // Oculta o botão conectar
+  // Atualiza texto do botão
   const btnConectar = document.getElementById('connect-metamask-btn');
   if (btnConectar) {
-    btnConectar.style.display = 'none';
-    console.log('✅ Botão conectar ocultado');
+    btnConectar.innerHTML = `
+      <img src="imgs/metamask-fox.svg" alt="MetaMask" class="metamask-icon">
+      Conectado
+    `;
+    btnConectar.disabled = true;
+    console.log('✅ Botão atualizado para estado conectado');
   }
   
   console.log('🎉 Interface de conexão atualizada com sucesso!');
@@ -147,11 +149,12 @@ const deployStatus = document.getElementById('deploy-status');
 
 // Elementos do novo layout
 const walletStatus = document.getElementById('wallet-status');
-const connectionInfo = document.getElementById('connection-info');
-const ownerDisplay = document.getElementById('owner-display');
-const networkDisplayInfo = document.getElementById('network-display-info');
+const connectionInfo = document.getElementById('connection-info'); // Removido
+const ownerDisplay = document.getElementById('owner-display'); // Removido
+const networkDisplayInfo = document.getElementById('network-display-info'); // Removido
 const networkValue = document.getElementById('networkValue');
 const networkDisplay = document.getElementById('networkDisplay'); // Campo oculto
+const connectionSection = document.querySelector('.connection-section');
 
 let currentStep = 1;
 
@@ -164,19 +167,13 @@ if (walletStatus) {
   walletStatus.value = 'Clique em "Conectar" para iniciar';
 }
 
-if (connectionInfo) {
-  connectionInfo.style.display = 'none';
-}
-
 // Inicializa campos ocultos (com verificações defensivas)
 if (networkValue) networkValue.value = '';
 if (networkDisplay) networkDisplay.value = '';
 
 console.log('🚀 Interface inicializada:', {
   walletStatus: !!walletStatus,
-  connectionInfo: !!connectionInfo,
-  ownerDisplay: !!ownerDisplay,
-  networkDisplayInfo: !!networkDisplayInfo,
+  connectionSection: !!connectionSection,
   networkValue: !!networkValue,
   networkDisplay: !!networkDisplay
 });
@@ -213,14 +210,27 @@ function reiniciarFluxo() {
   
   // Reinicializa interface de conexão (com verificações defensivas)
   const btnConectar = document.getElementById('connect-metamask-btn');
-  if (btnConectar) btnConectar.style.display = 'block';
+  if (btnConectar) {
+    btnConectar.style.display = 'block';
+    btnConectar.disabled = false;
+    btnConectar.innerHTML = `
+      <img src="imgs/metamask-fox.svg" alt="MetaMask" class="metamask-icon">
+      Conectar MetaMask
+    `;
+  }
+  
+  if (connectionSection) {
+    connectionSection.classList.remove('connecting', 'connected-state');
+  }
   
   if (walletStatus) walletStatus.value = 'Clique em "Conectar" para iniciar';
-  if (connectionInfo) connectionInfo.style.display = 'none';
-  if (ownerDisplay) ownerDisplay.textContent = '-';
-  if (networkDisplayInfo) networkDisplayInfo.textContent = '-';
   
-  if (inputOwner) inputOwner.readOnly = true;
+  if (inputOwner) {
+    inputOwner.readOnly = true;
+    inputOwner.classList.remove('filled');
+    inputOwner.value = '';
+    inputOwner.placeholder = 'Será preenchido após conectar carteira';
+  }
   
   // Reinicializa campos ocultos (com verificações defensivas)
   if (networkDisplay) networkDisplay.value = '';

@@ -3163,112 +3163,124 @@ section,
 }
 
 /* ==============================
-   SCCAFE - Melhorias de UX
+   SCCAFE - Layout Melhorado
    ============================== */
 
-/* Seção de conexão no topo */
+/* Seção de conexão no topo - Design elegante */
 .connection-section {
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   border: 2px solid #dee2e6;
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 1.5em;
-  margin-bottom: 2em;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  margin-bottom: 1.5em;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.connection-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #28a745, #20c997, #17a2b8);
 }
 
 .connection-container {
   display: flex;
-  gap: 0.75em;
+  gap: 1em;
   align-items: center;
 }
 
 .connection-container input {
   flex: 1;
-  padding: 0.75em 1em;
-  border: 1px solid #ced4da;
-  border-radius: 8px;
+  padding: 1em 1.2em;
+  border: 2px solid #ced4da;
+  border-radius: 12px;
   background: white;
   font-size: 0.95em;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 
+.connection-container input:focus {
+  border-color: #28a745;
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+}
+
+/* Botão conectar com ícone MetaMask */
 .connect-btn {
-  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  background: linear-gradient(135deg, #f6851b 0%, #e2761b 100%);
   color: white;
   border: none;
-  padding: 0.75em 1.5em;
-  border-radius: 8px;
+  padding: 1em 1.5em;
+  border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   white-space: nowrap;
-  min-width: 160px;
+  min-width: 180px;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  box-shadow: 0 4px 15px rgba(246, 133, 27, 0.3);
 }
 
 .connect-btn:hover {
-  background: linear-gradient(135deg, #218838 0%, #1ba385 100%);
+  background: linear-gradient(135deg, #e2761b 0%, #cd711a 100%);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+  box-shadow: 0 6px 20px rgba(246, 133, 27, 0.4);
 }
 
 .connect-btn:active {
   transform: translateY(0);
 }
 
-/* Informações da conexão */
-.connection-info {
-  margin-top: 1em;
-  padding: 1em;
-  background: rgba(40, 167, 69, 0.05);
-  border: 1px solid rgba(40, 167, 69, 0.2);
-  border-radius: 8px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1em;
+/* Ícone MetaMask no botão */
+.metamask-icon {
+  width: 20px;
+  height: 20px;
+  filter: brightness(0) invert(1);
 }
 
-.info-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25em;
-}
-
-.info-label {
-  font-size: 0.85em;
+/* Estado conectado - campos preenchidos */
+.connected-state .connection-container input {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  border-color: #28a745;
+  color: #155724;
   font-weight: 600;
-  color: #495057;
 }
 
-.info-value {
-  font-size: 0.9em;
-  color: #28a745;
-  font-weight: 500;
+.connected-state .connect-btn {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.connected-state .connect-btn .metamask-icon {
+  filter: brightness(0) invert(1);
+}
+
+/* Animação de conexão */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.connecting .connect-btn {
+  animation: pulse 1.5s infinite;
+  background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+}
+
+/* Campo proprietário preenchido */
+#ownerAddress.filled {
+  background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+  border-color: #17a2b8;
+  color: #0c5460;
+  font-weight: 600;
   font-family: 'Courier New', monospace;
-  word-break: break-all;
-}
-
-/* Container do botão próximo com info de rede */
-.next-step-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 1em;
-  gap: 1em;
-}
-
-/* Informação de rede ao lado do botão */
-.network-info {
-  display: none;
-  padding: 0.5em 1em;
-  background: rgba(22, 146, 75, 0.1);
-  border: 1px solid rgba(22, 146, 75, 0.3);
-  border-radius: 8px;
-  font-size: 0.9em;
-  white-space: nowrap;
-}
-
-.network-info small {
-  color: #16924b;
-  font-weight: 500;
 }
 
 /* Responsividade para telas menores */
@@ -3276,34 +3288,46 @@ section,
   .connection-container {
     flex-direction: column;
     align-items: stretch;
+    gap: 1em;
   }
   
   .connect-btn {
     min-width: auto;
+    justify-content: center;
   }
   
-  .connection-info {
-    grid-template-columns: 1fr;
-  }
-  
-  .next-step-container {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.5em;
-  }
-  
-  .network-info {
-    text-align: center;
-    order: -1; /* Mostra info da rede antes do botão em mobile */
+  .connection-section {
+    margin-bottom: 1em;
+    padding: 1.2em;
   }
 }
 
-/* Melhoria visual para botões */
+/* Melhoria visual para botões gerais */
 .navigation button {
   transition: all 0.3s ease;
+  padding: 0.8em 1.5em;
+  border-radius: 10px;
+  font-weight: 600;
 }
 
 .navigation button:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Melhorias nos campos de formulário */
+.form-group input:focus {
+  border-color: #28a745;
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+}
+
+/* Título com espaçamento melhorado */
+.step-title {
+  margin-top: 0.5em;
+  margin-bottom: 0.8em;
+}
+
+.step-description {
+  margin-bottom: 1.5em;
+  color: #6c757d;
 }

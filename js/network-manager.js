@@ -97,8 +97,7 @@ export function updateNetworkDisplay(element) {
 export function updateNetworkInfo() {
   const networkDisplay = document.getElementById('networkDisplay'); // Campo oculto
   const networkValue = document.getElementById('networkValue');
-  const networkDisplayInfo = document.getElementById('network-display-info'); // Display visual
-  const ownerDisplay = document.getElementById('owner-display');
+  const walletStatus = document.getElementById('wallet-status');
   const inputOwner = document.getElementById('ownerAddress');
   
   if (currentNetwork) {
@@ -116,19 +115,13 @@ export function updateNetworkInfo() {
       });
     }
     
-    // Atualiza o display visual na seção de conexão
-    if (networkDisplayInfo) {
-      networkDisplayInfo.textContent = currentNetwork.name;
-      networkDisplayInfo.style.color = currentNetwork.isSupported !== false ? '#28a745' : '#dc3545';
-    }
-    
-    // Atualiza o display do proprietário se disponível
-    if (ownerDisplay && inputOwner && inputOwner.value) {
+    // Atualiza o status da carteira para incluir rede
+    if (walletStatus && inputOwner && inputOwner.value) {
       const address = inputOwner.value;
-      ownerDisplay.textContent = `${address.slice(0, 6)}...${address.slice(-4)}`;
+      walletStatus.value = `Conectado: ${address.slice(0, 6)}...${address.slice(-4)} | ${currentNetwork.name}`;
     }
     
-    console.log('✅ Interface atualizada com:', currentNetwork.name);
+    console.log('✅ Interface atualizada com rede:', currentNetwork.name);
   } else {
     // Estado desconectado
     if (networkDisplay) {
@@ -139,13 +132,8 @@ export function updateNetworkInfo() {
       networkValue.value = '';
     }
     
-    if (networkDisplayInfo) {
-      networkDisplayInfo.textContent = 'Não conectado';
-      networkDisplayInfo.style.color = '#6c757d';
-    }
-    
-    if (ownerDisplay) {
-      ownerDisplay.textContent = '-';
+    if (walletStatus) {
+      walletStatus.value = 'Clique em "Conectar" para iniciar';
     }
   }
 }
