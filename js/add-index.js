@@ -7,11 +7,11 @@ if (btnConectar) {
 }
 
 
-import { marcarConcluido, clearErrors, markErrors } from './token-add-utils.js';
+import { marcarConcluido, clearErrors, markErrors } from './add-utils.js';
 import { salvarContrato, compilarContrato, contratoSource } from './token-add-contratos.js';
 import { deployContrato } from './token-add-deploy.js';
 import { connectMetaMask, listenMetaMask, adicionarTokenMetaMask, montarTokenData, gerarLinkToken } from '../token/js/token-add-metamask.js';
-import { buscarSaltFake, pararBuscaSalt } from './token-add-salt.js';
+import { buscarSaltFake, pararBuscaSalt } from './add-salt.js';
 
 
 

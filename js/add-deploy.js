@@ -1,7 +1,7 @@
 // deploy.js
 // Deploy do contrato na blockchain via ethers.js + MetaMask
 
-import { marcarConcluido } from './token-add-utils.js';
+import { marcarConcluido } from './add-utils.js';
 import { contratoAbi, contratoBytecode } from './token-add-contratos.js';
 
 /**
