@@ -3,11 +3,10 @@
 // ------------------------------------------------------------
 // BLOCO 1: Conexão e eventos MetaMask
 /**
- * Solicita conexão com MetaMask, preenche owner e rede em inputs.
+ * Solicita conexão com MetaMask, preenche owner em input.
  * @param {HTMLInputElement} inputOwner 
- * @param {HTMLInputElement} networkDisplay
  */
-export async function connectMetaMask(inputOwner, networkDisplay) {
+export async function connectMetaMask(inputOwner) {
   if (!window.ethereum) {
     alert("MetaMask não encontrada. Instale a extensão MetaMask no seu navegador!");
     return;
@@ -21,8 +20,7 @@ export async function connectMetaMask(inputOwner, networkDisplay) {
       inputOwner.readOnly = false;
       inputOwner.style.background = "#e9f7ef";
     }
-    // NÃO preenche automaticamente o campo de rede - será feito pelo network-manager
-    // if (networkDisplay) networkDisplay.value = chainId;
+    // A detecção de rede é feita pelo network-manager
     
     const btn = document.getElementById('connect-metamask-btn');
     if (btn) btn.style.display = "none";
@@ -35,9 +33,9 @@ export async function connectMetaMask(inputOwner, networkDisplay) {
 
 /**
  * Monitora eventos de troca de conta e rede do MetaMask.
- * Atualiza os inputs de owner e rede em tempo real.
+ * Atualiza o input de owner em tempo real.
  */
-export function listenMetaMask(inputOwner, networkDisplay) {
+export function listenMetaMask(inputOwner) {
   if (!window.ethereum) return;
   
   window.ethereum.on('accountsChanged', function (accounts) {
@@ -45,7 +43,7 @@ export function listenMetaMask(inputOwner, networkDisplay) {
   });
   
   window.ethereum.on('chainChanged', async function (chainId) {
-    // Não preenche automaticamente - deixa o network-manager detectar
+    // A detecção de rede é feita pelo network-manager
     console.log('🔄 Rede alterada, network-manager detectará automaticamente...');
   });
 }

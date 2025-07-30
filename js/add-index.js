@@ -3,7 +3,7 @@ import { salvarContrato, compilarContrato, contratoSource, debugContractState } 
 import { deployContrato } from './add-deploy.js';
 import { connectMetaMask, listenMetaMask, adicionarTokenMetaMask, montarTokenData, gerarLinkToken, switchOrAddNetwork } from './add-metamask.js';
 import { buscarSaltFake, pararBuscaSalt } from './add-salt.js';
-import { detectCurrentNetwork, currentNetwork, setupNetworkMonitoring, updateNetworkDisplay } from './network-manager.js';
+import { detectCurrentNetwork, currentNetwork, setupNetworkMonitoring, updateNetworkInfo } from './network-manager.js';
 import { showVerificationInterface } from './verification-ui.js';
 import { initNetworkCommons } from './network-commons.js';
 
@@ -12,13 +12,13 @@ const btnConectar = document.getElementById('connect-metamask-btn');
 if (btnConectar) {
   btnConectar.addEventListener('click', async () => {
     // Primeiro conecta MetaMask
-    await connectMetaMask(inputOwner, networkDisplay);
+    await connectMetaMask(inputOwner);
     
     // Depois detecta a rede
     await detectNetworkAfterConnection();
     
     // Inicia monitoramento de mudanças (só após conexão)
-    listenMetaMask(inputOwner, networkDisplay);
+    listenMetaMask(inputOwner);
   });
 }
 
@@ -37,11 +37,11 @@ async function initNetworkSystem() {
 async function detectNetworkAfterConnection() {
   try {
     await detectCurrentNetwork();
-    updateNetworkDisplay(networkDisplay);
+    updateNetworkInfo(); // Usa a nova função para o layout atualizado
     
     // Inicia monitoramento para mudanças de rede
     if (typeof setupNetworkMonitoring === 'function') {
-      setupNetworkMonitoring(networkDisplay);
+      setupNetworkMonitoring(); // Remove parâmetro desnecessário
     }
   } catch (error) {
     console.log('❌ Erro ao detectar rede:', error);
@@ -88,16 +88,23 @@ const nextStep4 = document.getElementById('next-step-4');
 const compileStatus = document.getElementById('compile-status');
 const deployStatus = document.getElementById('deploy-status');
 const networkDisplay = document.getElementById('networkDisplay');
+const networkValue = document.getElementById('networkValue'); // Campo oculto
+const networkInfo = document.querySelector('.network-info'); // Container da info de rede
 let currentStep = 1;
 
 // Garante que os botões começam desabilitados
 if (btnCompilar) btnCompilar.disabled = true;
 if (btnDeploy) btnDeploy.disabled = true;
 
-// Garante que o campo de rede comece vazio
-if (networkDisplay) {
-  networkDisplay.value = '';
-  networkDisplay.placeholder = 'Conecte sua carteira';
+// Inicializa exibição da rede
+if (networkDisplay && networkInfo) {
+  networkDisplay.textContent = 'Conecte sua carteira';
+  networkInfo.style.display = 'none'; // Oculta até conectar
+}
+
+// Inicializa campo oculto da rede
+if (networkValue) {
+  networkValue.value = '';
 }
 
 // -------------------- Navegação entre steps --------------------
@@ -132,7 +139,16 @@ function reiniciarFluxo() {
   document.getElementById('connect-metamask-btn').style.display = "";
   document.getElementById('connected-wallet-info').style.display = "none";
   inputOwner.readOnly = true;
-  networkDisplay.value = "";
+  
+  // Reinicializa exibição da rede
+  if (networkDisplay && networkInfo) {
+    networkDisplay.textContent = 'Conecte sua carteira';
+    networkInfo.style.display = 'none';
+  }
+  if (networkValue) {
+    networkValue.value = '';
+  }
+  
   showStep(1);
 }
 
@@ -165,7 +181,7 @@ function fillResumo() {
     <strong>Total Supply:</strong> ${inputSupply.value}<br>
     <strong>Proprietário:</strong> ${ownerChecksum}<br>
     <strong>Logo:</strong> ${inputImage.value || "-"}<br>
-    <strong>Rede:</strong> ${networkDisplay.value || "-"}<br>
+    <strong>Rede:</strong> ${networkDisplay ? networkDisplay.textContent : "Não detectada"}<br>
     <strong>Tipo de Endereço:</strong> ${(radioPersonalizado && radioPersonalizado.checked) ? "Personalizado" : "Padrão"}
   `;
 }
@@ -320,8 +336,16 @@ if (btnAddMetaMask) {
       const symbol = document.getElementById('final-token-symbol').value;
       const decimals = parseInt(document.getElementById('final-token-decimals').value, 10);
       const image = document.getElementById('final-token-image').value;
-      // Recupera chainId e dados de rede se disponíveis
-      let chainId = networkDisplay.value;
+      // Recupera chainId e dados de rede do campo oculto
+      let networkData = null;
+      if (networkValue && networkValue.value) {
+        try {
+          networkData = JSON.parse(networkValue.value);
+        } catch (e) {
+          console.log('Erro ao parse dados da rede:', e);
+        }
+      }
+      let chainId = networkData ? networkData.chainId : null;
       let tokenData = { address, symbol, decimals, image };
       if (chainId) {
         tokenData.chainId = chainId.startsWith('0x') ? parseInt(chainId, 16) : parseInt(chainId);

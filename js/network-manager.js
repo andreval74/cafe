@@ -88,7 +88,51 @@ export function updateNetworkDisplay(element) {
     } else {
       element.textContent = 'Não conectado';
     }
-    element.style.color = '#666';
+  }
+}
+
+/**
+ * Atualiza o novo layout com informação da rede ao lado do botão
+ */
+export function updateNetworkInfo() {
+  const networkDisplay = document.getElementById('networkDisplay');
+  const networkValue = document.getElementById('networkValue');
+  const networkInfo = document.querySelector('.network-info');
+  
+  if (currentNetwork) {
+    // Atualiza o display visual
+    if (networkDisplay) {
+      networkDisplay.textContent = currentNetwork.name;
+      networkDisplay.style.color = currentNetwork.isSupported !== false ? '#16924b' : '#b91c1c';
+    }
+    
+    // Atualiza o campo oculto para o sistema
+    if (networkValue) {
+      networkValue.value = JSON.stringify({
+        chainId: currentNetwork.chainId,
+        name: currentNetwork.name,
+        blockExplorer: currentNetwork.blockExplorer
+      });
+    }
+    
+    // Mostra a informação da rede
+    if (networkInfo) {
+      networkInfo.style.display = 'block';
+    }
+  } else {
+    // Estado desconectado
+    if (networkDisplay) {
+      networkDisplay.textContent = 'Conecte sua carteira';
+      networkDisplay.style.color = '#666';
+    }
+    
+    if (networkValue) {
+      networkValue.value = '';
+    }
+    
+    if (networkInfo) {
+      networkInfo.style.display = 'none';
+    }
   }
 }
 
@@ -204,19 +248,19 @@ export function getVerificationData() {
 /**
  * Monitora mudanças de rede
  */
-export function setupNetworkMonitoring(networkDisplayElement) {
+export function setupNetworkMonitoring() {
   if (!window.ethereum) return;
 
   // Detecta rede inicial
   detectCurrentNetwork().then(() => {
-    updateNetworkDisplay(networkDisplayElement);
+    updateNetworkInfo(); // Usa a nova função
   });
 
   // Monitora mudanças de rede
   window.ethereum.on('chainChanged', async (chainId) => {
     console.log('🔄 Rede alterada para:', parseInt(chainId, 16));
     await detectCurrentNetwork();
-    updateNetworkDisplay(networkDisplayElement);
+    updateNetworkInfo(); // Usa a nova função
   });
 
   // Monitora mudanças de conta
@@ -224,7 +268,7 @@ export function setupNetworkMonitoring(networkDisplayElement) {
     if (accounts.length > 0) {
       console.log('👤 Conta alterada para:', accounts[0]);
       await detectCurrentNetwork();
-      updateNetworkDisplay(networkDisplayElement);
+      updateNetworkInfo(); // Usa a nova função
     }
   });
 }

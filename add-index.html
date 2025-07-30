@@ -60,17 +60,23 @@
           <input type="text" id="ownerAddress" placeholder="Conecte sua carteira" required readonly>
         </div>
         <div class="form-group">
-          <label>🔗 Rede conectada</label>
-          <input type="text" id="networkDisplay" readonly>
-        </div>
-        <div class="form-group">
           <label for="tokenImage">🖼️ URL da Imagem do Token</label>
           <input type="url" id="tokenImage" placeholder="https://exemplo.com/logo.png">
         </div>
+        <!-- Campo oculto para armazenar a rede -->
+        <input type="hidden" id="networkValue" name="network">
         <div class="navigation">
           <button id="connect-metamask-btn" type="button">Conectar MetaMask</button>
           <div id="connected-wallet-info" style="display:none;color:#16924b;margin-top:1em;font-size:.98em;">Carteira conectada e rede detectada!</div>
-          <button id="next-step-1">➡️ Próximo: Personalização</button>
+          
+          <div class="next-step-container" style="display:flex;align-items:center;justify-content:space-between;margin-top:1em;">
+            <button id="next-step-1">➡️ Próximo: Personalização</button>
+            <div class="network-info" style="display:none;">
+              <small style="color:#666;margin-right:1em;">
+                🔗 <span id="networkDisplay">Detectando rede...</span>
+              </small>
+            </div>
+          </div>
 
         </div>
       </div>
