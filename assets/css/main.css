@@ -3476,6 +3476,61 @@ section,
   font-style: italic;
 }
 
+/* Seção do endereço do contrato */
+.contract-address-section {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 1.5em;
+  border-radius: 8px;
+  margin-bottom: 1.5em;
+  border-left: 4px solid #28a745;
+}
+
+.contract-address-section h5 {
+  color: #155724;
+  margin-bottom: 1em;
+  font-size: 1.2em;
+}
+
+.contract-address-section .copy-section {
+  display: flex;
+  gap: 0.5em;
+}
+
+.contract-address-section input {
+  flex: 1;
+  padding: 0.8em;
+  border: 2px solid #28a745;
+  border-radius: 6px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+  background: #d4edda;
+  color: #155724;
+  font-weight: 600;
+}
+
+.contract-address-section input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.2);
+}
+
+.contract-address-section .btn-copy {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  border: none;
+  padding: 0.8em 1.2em;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.contract-address-section .btn-copy:hover {
+  background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
 /* Seção de links diretos para verificação */
 .verification-links-section {
   background: rgba(255, 255, 255, 0.95);

@@ -6,7 +6,7 @@ import { buscarSaltFake, pararBuscaSalt } from './add-salt.js';
 import { detectCurrentNetwork, currentNetwork, setupNetworkMonitoring, updateNetworkInfo } from './network-manager.js';
 import { showVerificationInterface } from './verification-ui.js';
 import { initNetworkCommons } from './network-commons.js';
-import { verificarContratoAutomaticamente } from './auto-verification.js';
+import { verificarContratoManualmente } from './manual-verification.js';
 
 // Adiciona evento ao botão Conectar MetaMask
 const btnConectar = document.getElementById('connect-metamask-btn');
@@ -536,7 +536,7 @@ function getCurrentChainId() {
   return 97; // Default BSC Testnet
 }
 
-// Handler para verificação automática
+// Handler para verificação manual
 if (btnAutoVerify) {
   btnAutoVerify.onclick = async () => {
     // Verificar se contrato foi deployado
@@ -558,6 +558,9 @@ if (btnAutoVerify) {
     } catch (e) {
       console.log('Erro ao obter chainId:', e);
     }
+    
+    // Chamar verificação manual
+    verificarContratoManualmente(contractAddress, chainId);
     
     // Iniciar verificação automática
     await verificarContratoAutomaticamente(contractAddress, chainId);
