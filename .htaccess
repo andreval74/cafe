@@ -1,0 +1,7 @@
+# Redirecionamento do favicon.ico para o PNG existente
+RewriteEngine On
+RewriteRule ^favicon\.ico$ /imgs/sccafe-32x32.png [L]
+
+# Definir tipos MIME para ícones
+AddType image/x-icon .ico
+AddType image/png .png

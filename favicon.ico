@@ -1,0 +1,3 @@
+/* Este arquivo representa o favicon.ico */
+/* Como não posso criar arquivos binários, use os arquivos PNG na pasta imgs/ */
+/* O .htaccess configurado redirecionará favicon.ico para sccafe-32x32.png */
