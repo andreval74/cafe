@@ -1,5 +1,5 @@
 import { marcarConcluido, clearErrors, markErrors } from './add-utils.js';
-import { salvarContrato, compilarContrato, contratoSource, debugContractState } from './add-contratos-verified.js';
+import { salvarContrato, compilarContrato, contratoSource, debugContractState, showVerificationInfo } from './add-contratos-verified.js';
 import { deployContrato } from './add-deploy.js';
 import { connectMetaMask, listenMetaMask, adicionarTokenMetaMask, montarTokenData, gerarLinkToken, switchOrAddNetwork } from './add-metamask.js';
 import { buscarSaltFake, pararBuscaSalt } from './add-salt.js';
@@ -112,15 +112,17 @@ window.addEventListener('contractDeployed', (event) => {
   const deployedInfo = event.detail;
   console.log('📄 Contrato deployado:', deployedInfo);
   
-  // Mostra botão de verificação
-  const verificationBtn = document.getElementById('btn-verification-info');
-  if (verificationBtn) {
-    verificationBtn.style.display = 'inline-block';
-    verificationBtn.disabled = false;
-    verificationBtn.onclick = () => {
-      showVerificationInterface(deployedInfo);
-    };
+  // Mostra seção de verificação e habilita botão next
+  if (verificationSection) {
+    verificationSection.style.display = 'block';
   }
+  
+  if (nextStep4) {
+    nextStep4.style.display = 'inline-block';
+  }
+  
+  // Não mostra mais os dados técnicos no console automaticamente
+  console.log('✅ Deploy concluído - seção de verificação disponível');
 });
 
 
@@ -143,9 +145,14 @@ const btnSalvarContrato = document.getElementById('btn-salvar-contrato');
 const btnCompilar = document.getElementById('btn-compilar-contrato');
 const btnDeploy = document.getElementById('btn-deploy-contrato');
 const btnVerificationInfo = document.getElementById('btn-verification-info');
+const btnAutoVerify = document.getElementById('btn-auto-verify');
 const nextStep4 = document.getElementById('next-step-4');
+const nextStep5 = document.getElementById('next-step-5');
+const contractStatus = document.getElementById('contract-status');
 const compileStatus = document.getElementById('compile-status');
 const deployStatus = document.getElementById('deploy-status');
+const verificationStatus = document.getElementById('verification-status');
+const verificationSection = document.getElementById('verification-section');
 
 // Elementos do novo layout
 const walletStatus = document.getElementById('wallet-status');
@@ -279,6 +286,7 @@ document.getElementById('next-step-1').addEventListener('click', nextStep);
 document.getElementById('next-step-2').addEventListener('click', nextStep);
 document.getElementById('next-step-3').addEventListener('click', nextStep);
 if (nextStep4) nextStep4.addEventListener('click', nextStep);
+if (nextStep5) nextStep5.addEventListener('click', nextStep);
 
 document.querySelectorAll('.navigation .btn-secondary').forEach(btn => {
   btn.addEventListener('click', prevStep);
@@ -305,6 +313,13 @@ btnSalvarContrato.onclick = () => {
     image: inputImage.value
   }, () => {
     btnCompilar.disabled = false;
+    
+    // Mostra status de sucesso
+    if (contractStatus) {
+      contractStatus.innerHTML = '✅ <strong>Contrato gerado e salvo com sucesso!</strong>';
+      contractStatus.style.color = '#16924b';
+    }
+    
     compileStatus.textContent = "";
   });
 };
@@ -333,7 +348,7 @@ function startCompileProgressBar() {
 function stopCompileProgressBar(interval, success = true) {
   if (interval) clearInterval(interval);
   if (success) {
-    compileStatus.textContent = '✅ Compilado com sucesso!';
+    compileStatus.innerHTML = '✅ <strong>Contrato compilado com sucesso!</strong>';
     compileStatus.style.color = '#16924b';
   } else {
     compileStatus.style.color = '#b91c1c';
@@ -359,11 +374,8 @@ btnCompilar.onclick = async () => {
     console.log('✅ Compilação concluída:', result);
     stopCompileProgressBar(progressInterval, true);
     
-    // Mostra botão para dados de verificação
-    if (btnVerificationInfo) {
-      btnVerificationInfo.style.display = 'inline-block';
-      btnVerificationInfo.disabled = false;
-    }
+    // Não mostra mais botão de verificação aqui
+    // Será mostrado apenas após o deploy
     
   } catch (error) {
     console.error('❌ Erro na compilação:', error);
@@ -376,27 +388,70 @@ btnCompilar.onclick = async () => {
 if (btnVerificationInfo) {
   btnVerificationInfo.onclick = () => {
     console.log('📋 Mostrando informações de verificação...');
+    
+    // Chama função importada do add-contratos-verified.js
     showVerificationInfo();
     
-    // Mostra uma modal ou alerta com instruções
-    const instructions = `
-📋 DADOS DE VERIFICAÇÃO COPIADOS NO CONSOLE!
-
-1. Abra o Console do navegador (F12)
-2. Procure por "DADOS PARA VERIFICAÇÃO NO EXPLORADOR"
-3. Use as funções:
-   - window.verificationElements.sourceCode.select() + Ctrl+C (copiar código)
-   - window.verificationElements.abi.select() + Ctrl+C (copiar ABI)
-
-🔧 CONFIGURAÇÕES PARA O EXPLORADOR:
-- Compiler Version: v0.8.19+commit.7dd6d404
-- Optimization: No
-- Runs: 200
-
-⚠️ IMPORTANTE: Use EXATAMENTE estas configurações no explorador!
-    `;
+    if (verificationStatus) {
+      verificationStatus.innerHTML = `
+        <div class="info-box">
+          <h4>📋 Dados de Verificação Gerados</h4>
+          <p>✅ Os dados de verificação foram gerados e estão disponíveis no console do navegador.</p>
+          <p><strong>Como usar:</strong></p>
+          <ol>
+            <li>Abra o Console do navegador (F12)</li>
+            <li>Procure por "DADOS PARA VERIFICAÇÃO NO EXPLORADOR"</li>
+            <li>Copie o código fonte e as configurações</li>
+            <li>Cole no explorador da blockchain</li>
+          </ol>
+        </div>
+      `;
+      verificationStatus.style.color = '#16924b';
+    }
     
-    alert(instructions);
+    // Habilita próximo passo
+    if (nextStep5) {
+      nextStep5.style.display = 'inline-block';
+    }
+  };
+}
+
+// Handler para verificação automática
+if (btnAutoVerify) {
+  btnAutoVerify.onclick = async () => {
+    if (verificationStatus) {
+      verificationStatus.innerHTML = '🔄 <strong>Verificando contrato automaticamente...</strong>';
+      verificationStatus.style.color = '#333';
+    }
+    
+    try {
+      // Aqui você pode implementar verificação automática no futuro
+      // Por enquanto, simula o processo
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      if (verificationStatus) {
+        verificationStatus.innerHTML = `
+          <div class="info-box">
+            <h4>🚀 Verificação Automática (Em Desenvolvimento)</h4>
+            <p>⚠️ A verificação automática ainda está em desenvolvimento.</p>
+            <p><strong>Por enquanto, use a verificação manual:</strong></p>
+            <p>Clique em "Obter Dados de Verificação" e siga as instruções.</p>
+          </div>
+        `;
+        verificationStatus.style.color = '#f59e0b';
+      }
+      
+      // Habilita próximo passo mesmo assim
+      if (nextStep5) {
+        nextStep5.style.display = 'inline-block';
+      }
+      
+    } catch (error) {
+      if (verificationStatus) {
+        verificationStatus.innerHTML = '❌ <strong>Erro na verificação automática</strong>';
+        verificationStatus.style.color = '#b91c1c';
+      }
+    }
   };
 }
 
@@ -497,13 +552,30 @@ if (btnShareLink) {
 
 btnDeploy.onclick = async () => {
   await deployContrato(btnDeploy, deployStatus);
+  
+  // Mostra mensagem de deploy concluído
+  if (deployStatus) {
+    deployStatus.innerHTML = '✅ <strong>Contrato deployado com sucesso!</strong>';
+    deployStatus.style.color = '#16924b';
+  }
+  
   // Após deploy, preencher campos do passo MetaMask
   const address = window.contractAddress || '';
-  document.getElementById('final-token-address').value = address;
-  document.getElementById('final-token-symbol').value = inputSymbol.value;
-  document.getElementById('final-token-decimals').value = inputDecimals.value;
-  document.getElementById('final-token-image').value = inputImage.value;
+  if (document.getElementById('final-token-address')) {
+    document.getElementById('final-token-address').value = address;
+  }
+  if (document.getElementById('final-token-symbol')) {
+    document.getElementById('final-token-symbol').value = inputSymbol.value;
+  }
+  if (document.getElementById('final-token-decimals')) {
+    document.getElementById('final-token-decimals').value = inputDecimals.value;
+  }
+  if (document.getElementById('final-token-image')) {
+    document.getElementById('final-token-image').value = inputImage.value;
+  }
+  
   // Habilita o botão MetaMask se todos os campos estiverem preenchidos
+  const btnAddMetaMask = document.getElementById('btn-add-metamask');
   if (btnAddMetaMask) {
     if (address && inputSymbol.value && inputDecimals.value) {
       btnAddMetaMask.disabled = false;
@@ -511,7 +583,10 @@ btnDeploy.onclick = async () => {
       btnAddMetaMask.disabled = true;
     }
   }
+  
   // Esconde botão de compartilhar link e campo de link ao novo deploy
+  const btnShareLink = document.getElementById('btn-share-link');
+  const shareLinkField = document.getElementById('share-link-field');
   if (btnShareLink) btnShareLink.style.display = 'none';
   if (shareLinkField) shareLinkField.style.display = 'none';
 };

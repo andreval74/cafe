@@ -3332,3 +3332,72 @@ section,
   margin-bottom: 1.5em;
   color: #6c757d;
 }
+
+/* ==============================
+   SCCAFE - Melhorias Deploy/Verificação  
+   ============================== */
+
+/* Status de sucesso para deploy e compilação */
+#contract-status,
+#compile-status,
+#deploy-status,
+#verification-status {
+  margin: 1em 0;
+  padding: 1em;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+#contract-status.success,
+#compile-status.success,
+#deploy-status.success,
+#verification-status.success {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  border: 1px solid #28a745;
+  color: #155724;
+}
+
+/* Seção de verificação */
+.verification-section {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 2px solid #dee2e6;
+  border-radius: 12px;
+  padding: 1.5em;
+  margin: 1em 0;
+}
+
+.verification-guide {
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 8px;
+  padding: 1em;
+}
+
+.verification-guide h4 {
+  color: #856404;
+  margin-bottom: 0.5em;
+}
+
+.verification-guide ol {
+  margin-bottom: 0;
+  color: #856404;
+}
+
+/* Botões de verificação */
+#btn-verification-info,
+#btn-auto-verify {
+  margin-right: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+#btn-auto-verify {
+  background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%);
+  border: none;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+#btn-auto-verify:hover {
+  background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+  transform: translateY(-2px);
+}

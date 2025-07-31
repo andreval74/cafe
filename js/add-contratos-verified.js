@@ -56,7 +56,7 @@ export function debugContractState() {
 }
 
 /**
- * Função para exibir dados de verificação
+ * Função para exibir dados de verificação (só quando solicitado)
  */
 export function showVerificationInfo() {
   if (!contratoName || !contratoBytecode) {
@@ -75,7 +75,7 @@ export function showVerificationInfo() {
   console.log(`EVM Version: ${compilationSettings.evmVersion}`);
   console.log('🆕 USANDO SEMPRE A ÚLTIMA VERSÃO DO SOLIDITY!');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log('🔗 Source Code (primeiro para copiar):');
+  console.log('🔗 Source Code (para copiar):');
   console.log(contratoSource);
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log('🔗 ABI (para usar no front-end):');
@@ -459,13 +459,13 @@ export async function compilarContrato(contractName, btnCompilar, compileStatus,
     console.log('- Compiler:', resolvedCompilerVersion);
     console.log('- EVM Version:', compilationSettings.evmVersion);
     
-    // Mostra informações para verificação
-    setTimeout(() => {
-      showVerificationInfo();
-    }, 1000);
+    // Não mostra mais informações automaticamente - só quando solicitado
+    // setTimeout(() => {
+    //   showVerificationInfo();
+    // }, 1000);
     
     marcarConcluido(btnCompilar);
-    compileStatus.textContent = `✅ Compilado com Solidity v${resolvedCompilerVersion} - Pronto para verificação!`;
+    compileStatus.textContent = `✅ Compilado com Solidity v${resolvedCompilerVersion} - Pronto para deploy!`;
     compileStatus.style.color = '#16924b';
     
     if (btnDeploy) {
