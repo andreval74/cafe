@@ -6,6 +6,7 @@ import { buscarSaltFake, pararBuscaSalt } from './add-salt.js';
 import { detectCurrentNetwork, currentNetwork, setupNetworkMonitoring, updateNetworkInfo } from './network-manager.js';
 import { showVerificationInterface } from './verification-ui.js';
 import { initNetworkCommons } from './network-commons.js';
+import { verificarContratoAutomaticamente } from './auto-verification.js';
 
 // Adiciona evento ao botão Conectar MetaMask
 const btnConectar = document.getElementById('connect-metamask-btn');
@@ -384,30 +385,30 @@ btnCompilar.onclick = async () => {
   }
 };
 
-// Handler para botão de verificação
+// Handler para botão de verificação manual
 if (btnVerificationInfo) {
   btnVerificationInfo.onclick = () => {
-    console.log('📋 Mostrando informações de verificação...');
+    console.log('📋 Mostrando dados de verificação manual...');
     
-    // Chama função importada do add-contratos-verified.js
+    // Chama função importada do add-contratos-verified.js para console (backup)
     showVerificationInfo();
     
-    if (verificationStatus) {
-      verificationStatus.innerHTML = `
-        <div class="info-box">
-          <h4>📋 Dados de Verificação Gerados</h4>
-          <p>✅ Os dados de verificação foram gerados e estão disponíveis no console do navegador.</p>
-          <p><strong>Como usar:</strong></p>
-          <ol>
-            <li>Abra o Console do navegador (F12)</li>
-            <li>Procure por "DADOS PARA VERIFICAÇÃO NO EXPLORADOR"</li>
-            <li>Copie o código fonte e as configurações</li>
-            <li>Cole no explorador da blockchain</li>
-          </ol>
-        </div>
-      `;
-      verificationStatus.style.color = '#16924b';
-    }
+    // Mostra interface visual amigável
+    const contractAddress = window.contractAddress || 'Endereço não encontrado';
+    
+    // Simula mostrar verificação manual
+    const contractData = {
+      isValid: true,
+      sourceCode: window.contratoSource || '',
+      contractName: window.contratoName || '',
+      compilerVersion: `v${window.resolvedCompilerVersion || '0.8.30'}+commit.d5af09b8`,
+      optimizationUsed: false,
+      runs: 200,
+      evmVersion: 'cancun'
+    };
+    
+    // Usar função do auto-verification.js
+    showManualVerificationInterface(contractData);
     
     // Habilita próximo passo
     if (nextStep5) {
@@ -416,42 +417,150 @@ if (btnVerificationInfo) {
   };
 }
 
+// Função auxiliar para mostrar interface manual
+function showManualVerificationInterface(contractData) {
+  const chainId = getCurrentChainId();
+  const VERIFICATION_APIS = {
+    1: { name: 'Ethereum', explorer: 'https://etherscan.io' },
+    56: { name: 'BNB Smart Chain', explorer: 'https://bscscan.com' },
+    97: { name: 'BNB Smart Chain Testnet', explorer: 'https://testnet.bscscan.com' },
+    137: { name: 'Polygon', explorer: 'https://polygonscan.com' },
+    43114: { name: 'Avalanche', explorer: 'https://snowtrace.io' }
+  };
+  
+  const apiConfig = VERIFICATION_APIS[chainId];
+  const networkName = apiConfig ? apiConfig.name : 'Rede Atual';
+  const explorerUrl = apiConfig ? apiConfig.explorer : '#';
+  
+  if (verificationStatus) {
+    verificationStatus.innerHTML = `
+      <div class="manual-verification">
+        <div class="verification-info">
+          <h4>📋 Dados para Verificação Manual</h4>
+          <p>✅ Todos os dados foram preparados para facilitar o processo manual.</p>
+        </div>
+        
+        <div class="verification-steps">
+          <h5>🎯 Passos para verificar:</h5>
+          <ol>
+            <li>Acesse o explorador: <a href="${explorerUrl}" target="_blank">${networkName}</a></li>
+            <li>Vá para o endereço do seu contrato</li>
+            <li>Clique em "Contract" → "Verify and Publish"</li>
+            <li>Use os dados abaixo (clique para copiar facilmente)</li>
+          </ol>
+        </div>
+        
+        <div class="verification-data">
+          <div class="data-group">
+            <label>📋 Configurações do Compilador:</label>
+            <div class="copy-section">
+              <div class="config-grid">
+                <div><strong>Compiler Version:</strong> ${contractData.compilerVersion}</div>
+                <div><strong>Optimization:</strong> ${contractData.optimizationUsed ? 'Yes' : 'No'}</div>
+                <div><strong>Runs:</strong> ${contractData.runs}</div>
+                <div><strong>EVM Version:</strong> ${contractData.evmVersion}</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="data-group">
+            <label>📄 Código Fonte:</label>
+            <div class="copy-section">
+              <textarea id="source-code-display" readonly>${contractData.sourceCode}</textarea>
+              <button type="button" class="btn-copy" onclick="copyToClipboard('source-code-display', this)">
+                📋 Copiar Código Fonte
+              </button>
+            </div>
+          </div>
+          
+          <div class="data-group">
+            <label>⚙️ ABI (Application Binary Interface):</label>
+            <div class="copy-section">
+              <textarea id="abi-display" readonly>${JSON.stringify(window.contratoAbi || [], null, 2)}</textarea>
+              <button type="button" class="btn-copy" onclick="copyToClipboard('abi-display', this)">
+                📋 Copiar ABI
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="verification-help">
+          <h5>💡 Dicas importantes:</h5>
+          <ul>
+            <li>✅ Use EXATAMENTE as configurações mostradas acima</li>
+            <li>🔄 O processo pode demorar alguns minutos</li>
+            <li>📧 Alguns exploradores enviam email de confirmação</li>
+            <li>🆔 Mantenha a aba aberta durante o processo</li>
+          </ul>
+        </div>
+      </div>
+    `;
+    verificationStatus.className = 'verification-status manual';
+  }
+}
+
+// Função para copiar texto para área de transferência
+window.copyToClipboard = function(elementId, buttonElement) {
+  const textarea = document.getElementById(elementId);
+  if (textarea) {
+    textarea.select();
+    document.execCommand('copy');
+    
+    const originalText = buttonElement.textContent;
+    buttonElement.textContent = '✅ Copiado!';
+    buttonElement.style.backgroundColor = '#28a745';
+    
+    setTimeout(() => {
+      buttonElement.textContent = originalText;
+      buttonElement.style.backgroundColor = '';
+    }, 2000);
+  }
+};
+
+// Função auxiliar para obter Chain ID atual
+function getCurrentChainId() {
+  if (window.ethereum && window.ethereum.chainId) {
+    return parseInt(window.ethereum.chainId, 16);
+  }
+  
+  try {
+    const networkValue = document.getElementById('networkValue');
+    if (networkValue && networkValue.value) {
+      const networkData = JSON.parse(networkValue.value);
+      return parseInt(networkData.chainId);
+    }
+  } catch (e) {
+    console.log('Erro ao obter chainId:', e);
+  }
+  
+  return 97; // Default BSC Testnet
+}
+
 // Handler para verificação automática
 if (btnAutoVerify) {
   btnAutoVerify.onclick = async () => {
-    if (verificationStatus) {
-      verificationStatus.innerHTML = '🔄 <strong>Verificando contrato automaticamente...</strong>';
-      verificationStatus.style.color = '#333';
-    }
-    
-    try {
-      // Aqui você pode implementar verificação automática no futuro
-      // Por enquanto, simula o processo
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+    // Verificar se contrato foi deployado
+    const contractAddress = window.contractAddress;
+    if (!contractAddress) {
       if (verificationStatus) {
-        verificationStatus.innerHTML = `
-          <div class="info-box">
-            <h4>🚀 Verificação Automática (Em Desenvolvimento)</h4>
-            <p>⚠️ A verificação automática ainda está em desenvolvimento.</p>
-            <p><strong>Por enquanto, use a verificação manual:</strong></p>
-            <p>Clique em "Obter Dados de Verificação" e siga as instruções.</p>
-          </div>
-        `;
-        verificationStatus.style.color = '#f59e0b';
-      }
-      
-      // Habilita próximo passo mesmo assim
-      if (nextStep5) {
-        nextStep5.style.display = 'inline-block';
-      }
-      
-    } catch (error) {
-      if (verificationStatus) {
-        verificationStatus.innerHTML = '❌ <strong>Erro na verificação automática</strong>';
+        verificationStatus.innerHTML = '❌ <strong>Deploy o contrato primeiro</strong>';
         verificationStatus.style.color = '#b91c1c';
       }
+      return;
     }
+    
+    // Obter Chain ID atual
+    let chainId = 97; // Default BSC Testnet
+    try {
+      if (window.ethereum && window.ethereum.chainId) {
+        chainId = parseInt(window.ethereum.chainId, 16);
+      }
+    } catch (e) {
+      console.log('Erro ao obter chainId:', e);
+    }
+    
+    // Iniciar verificação automática
+    await verificarContratoAutomaticamente(contractAddress, chainId);
   };
 }
 

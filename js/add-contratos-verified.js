@@ -459,6 +459,14 @@ export async function compilarContrato(contractName, btnCompilar, compileStatus,
     console.log('- Compiler:', resolvedCompilerVersion);
     console.log('- EVM Version:', compilationSettings.evmVersion);
     
+    // Expõe variáveis globalmente para verificação automática
+    window.contratoSource = contratoSource;
+    window.contratoAbi = contratoAbi;
+    window.contratoBytecode = contratoBytecode;
+    window.contratoName = contratoName;
+    window.resolvedCompilerVersion = resolvedCompilerVersion;
+    window.compilationSettings = compilationSettings;
+    
     // Não mostra mais informações automaticamente - só quando solicitado
     // setTimeout(() => {
     //   showVerificationInfo();
