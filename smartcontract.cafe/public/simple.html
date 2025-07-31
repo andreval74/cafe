@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modo Simples - SmartContract.Cafe ☕</title>
+    <meta name="description" content="Crie seu token em 60 segundos! Interface simples, gratuita e com sufixo cafe.">
+    
+    <!-- Favicons -->
+    <link rel="icon" href="../assets/images/sccafe-32x32.png" sizes="32x32">
+    <link rel="icon" href="../assets/images/sccafe-16x16.png" sizes="16x16">
+    <link rel="apple-touch-icon" href="../assets/images/sccafe-192x192.png">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/simple-mode.css">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header Simplificado -->
+    <header class="header-simple">
+        <nav class="navbar">
+            <div class="container">
+                <div class="nav-brand">
+                    <a href="index.html" class="brand-link">
+                        <img src="../assets/images/logo-sccafe.png" alt="SmartContract.Cafe" class="logo">
+                        <span class="brand-text">SmartContract<span class="accent">.Cafe</span></span>
+                    </a>
+                </div>
+                <div class="nav-actions">
+                    <span class="mode-indicator">🚀 Modo Simples</span>
+                    <a href="advanced.html" class="btn-switch">⚙️ Modo Avançado</a>
+                    <button class="btn-connect" id="connect-wallet">
+                        🦊 Conectar Carteira
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Progress Bar -->
+            <div class="progress-section">
+                <div class="progress-bar">
+                    <div class="progress-step active" data-step="1">
+                        <div class="step-circle">1</div>
+                        <span class="step-label">Conectar</span>
+                    </div>
+                    <div class="progress-line"></div>
+                    <div class="progress-step" data-step="2">
+                        <div class="step-circle">2</div>
+                        <span class="step-label">Configurar</span>
+                    </div>
+                    <div class="progress-line"></div>
+                    <div class="progress-step" data-step="3">
+                        <div class="step-circle">3</div>
+                        <span class="step-label">Criar</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Section -->
+            <div class="form-section">
+                <div class="form-container">
+                    <!-- Step 1: Conexão -->
+                    <div class="step-content active" id="step-1">
+                        <div class="step-header">
+                            <h1>🚀 Criação Simples de Token</h1>
+                            <p>Crie seu token ERC-20 profissional em apenas 60 segundos!</p>
+                        </div>
+
+                        <div class="connection-card">
+                            <div class="connection-icon">🦊</div>
+                            <h3>Conecte sua Carteira</h3>
+                            <p>Para começar, você precisa conectar sua carteira MetaMask.</p>
+                            <div class="connection-status" id="connection-status">
+                                <span class="status-indicator">🔴</span>
+                                <span class="status-text">Desconectado</span>
+                            </div>
+                        </div>
+
+                        <div class="benefits-grid">
+                            <div class="benefit-item">
+                                <span class="benefit-icon">✅</span>
+                                <span class="benefit-text">100% Gratuito</span>
+                            </div>
+                            <div class="benefit-item">
+                                <span class="benefit-icon">⚡</span>
+                                <span class="benefit-text">Deploy Instantâneo</span>
+                            </div>
+                            <div class="benefit-item">
+                                <span class="benefit-icon">🔒</span>
+                                <span class="benefit-text">Verificação Automática</span>
+                            </div>
+                            <div class="benefit-item">
+                                <span class="benefit-icon">☕</span>
+                                <span class="benefit-text">Marca Cafe Incluída</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Configuração -->
+                    <div class="step-content" id="step-2">
+                        <div class="step-header">
+                            <h2>⚙️ Configure seu Token</h2>
+                            <p>Preencha apenas 3 campos essenciais:</p>
+                        </div>
+
+                        <form class="token-form" id="token-form">
+                            <div class="form-group">
+                                <label for="tokenName" class="form-label">
+                                    📝 Nome do Token
+                                    <span class="required">*</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="tokenName" 
+                                    name="tokenName"
+                                    class="form-input" 
+                                    placeholder="Ex: Meu Token Cafe"
+                                    maxlength="50"
+                                    required
+                                >
+                                <small class="form-help">Nome completo do seu token (máx. 50 caracteres)</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="tokenSymbol" class="form-label">
+                                    🏷️ Símbolo do Token
+                                    <span class="required">*</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="tokenSymbol" 
+                                    name="tokenSymbol"
+                                    class="form-input" 
+                                    placeholder="Ex: MTC"
+                                    maxlength="10"
+                                    style="text-transform: uppercase"
+                                    required
+                                >
+                                <small class="form-help">Símbolo único (2-10 caracteres, maiúsculas)</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="totalSupply" class="form-label">
+                                    💰 Total Supply
+                                    <span class="required">*</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="totalSupply" 
+                                    name="totalSupply"
+                                    class="form-input" 
+                                    placeholder="Ex: 1000000"
+                                    required
+                                >
+                                <small class="form-help">Quantidade total de tokens (use apenas números)</small>
+                            </div>
+
+                            <!-- Campos automáticos -->
+                            <div class="auto-fields">
+                                <h4>🤖 Configurações Automáticas</h4>
+                                <div class="auto-field">
+                                    <span class="auto-label">Decimais:</span>
+                                    <span class="auto-value">18 (padrão)</span>
+                                </div>
+                                <div class="auto-field">
+                                    <span class="auto-label">Proprietário:</span>
+                                    <span class="auto-value" id="owner-display">Sua carteira conectada</span>
+                                </div>
+                                <div class="auto-field">
+                                    <span class="auto-label">Sufixo:</span>
+                                    <span class="auto-value highlight">cafe</span>
+                                </div>
+                                <div class="auto-field">
+                                    <span class="auto-label">Verificação:</span>
+                                    <span class="auto-value">Automática com marca SC.Cafe</span>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Step 3: Deploy -->
+                    <div class="step-content" id="step-3">
+                        <div class="step-header">
+                            <h2>🚀 Deploy do Token</h2>
+                            <p>Revise e confirme a criação do seu token:</p>
+                        </div>
+
+                        <div class="review-card">
+                            <h3>📋 Resumo do Token</h3>
+                            <div class="review-grid">
+                                <div class="review-item">
+                                    <span class="review-label">Nome:</span>
+                                    <span class="review-value" id="review-name">-</span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Símbolo:</span>
+                                    <span class="review-value" id="review-symbol">-</span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Supply:</span>
+                                    <span class="review-value" id="review-supply">-</span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Rede:</span>
+                                    <span class="review-value" id="review-network">-</span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Custo:</span>
+                                    <span class="review-value highlight">GRATUITO! ☕</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="deploy-section">
+                            <button class="btn-deploy" id="deployToken">
+                                <span class="btn-icon">🚀</span>
+                                <span class="btn-text">Criar Meu Token Agora!</span>
+                            </button>
+                            
+                            <!-- Progresso do Deploy -->
+                            <div id="deployProgress" style="display: none;"></div>
+                            
+                            <!-- Sucesso do Deploy -->
+                            <div id="deploySuccess" style="display: none;"></div>
+                        </div>
+
+                        <!-- Validação de Erros -->
+                        <div id="validationErrors" style="display: none;"></div>
+
+                        <!-- Preview do Token -->
+                        <div id="tokenPreview"></div>
+                    </div>
+
+                    <!-- Navigation -->
+                    <div class="step-nav">
+                        <button class="btn-nav btn-back" data-action="prev" style="display: none;">
+                            ⬅️ Voltar
+                        </button>
+                        <button class="btn-nav btn-next" data-action="next">
+                            Avançar ➡️
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sidebar Info -->
+                <div class="sidebar-info">
+                    <div class="info-card">
+                        <h3>☕ Modo Simples</h3>
+                        <p>Perfeito para iniciantes que querem criar um token básico rapidamente.</p>
+                        
+                        <div class="features-list">
+                            <div class="feature-item">
+                                <span class="feature-icon">✅</span>
+                                <span>Token ERC-20 padrão</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">✅</span>
+                                <span>Verificação automática</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">✅</span>
+                                <span>Compatível com todas carteiras</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">✅</span>
+                                <span>Pronto para exchanges</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>🎯 Quer Mais Recursos?</h3>
+                        <p>No modo avançado você pode adicionar:</p>
+                        
+                        <div class="advanced-features">
+                            <span>• Sistema de taxas</span>
+                            <span>• Anti-bot protection</span>
+                            <span>• Endereços personalizados</span>
+                            <span>• Painel de gestão</span>
+                            <span>• Marca customizada</span>
+                        </div>
+                        
+                        <a href="advanced.html" class="btn-upgrade">
+                            ⚙️ Explorar Modo Avançado
+                        </a>
+                    </div>
+
+                    <div class="info-card support">
+                        <h3>💬 Precisa de Ajuda?</h3>
+                        <p>Nossa comunidade está aqui para ajudar!</p>
+                        <div class="support-links">
+                            <a href="https://t.me/smartcontract_cafe" class="support-link">
+                                📱 Telegram
+                            </a>
+                            <a href="mailto:suporte@smartcontract.cafe" class="support-link">
+                                📧 Email
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script src="../assets/js/core/web3-manager.js"></script>
+    <script src="../assets/js/templates/basic-token.js"></script>
+    <script src="../assets/js/features/simple-interface.js"></script>
+</body>
+</html>

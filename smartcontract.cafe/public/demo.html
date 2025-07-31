@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartContract.Cafe - Demo Funcional</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/simple-mode.css">
+    
+    <style>
+        /* Estilos para demo */
+        .demo-header {
+            background: linear-gradient(135deg, var(--coffee-dark), var(--coffee-medium));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .demo-info {
+            background: #FEF3C7;
+            border: 1px solid #F59E0B;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .demo-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .demo-feature {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        
+        .demo-feature h4 {
+            color: var(--coffee-dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .demo-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+        
+        .demo-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        
+        .demo-btn-primary {
+            background: var(--coffee-medium);
+            color: white;
+        }
+        
+        .demo-btn-secondary {
+            background: #6B7280;
+            color: white;
+        }
+        
+        .demo-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+        
+        .demo-results {
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            padding: 1rem;
+            min-height: 200px;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-header">
+        <h1>🚀 SmartContract.Cafe - Demo Funcional</h1>
+        <p>Teste todas as funcionalidades do modo simples aqui!</p>
+    </div>
+
+    <div class="container">
+        <div class="demo-info">
+            <h3>📋 Status da Implementação</h3>
+            <p><strong>✅ Completo:</strong></p>
+            <ul>
+                <li>✅ Template de token básico com OpenZeppelin</li>
+                <li>✅ Interface de 3 steps com validação</li>
+                <li>✅ Sistema de notificações</li>
+                <li>✅ Gestão de estado do formulário</li>
+                <li>✅ Preview do token com sufixo "cafe"</li>
+                <li>✅ Simulação de deploy e sucesso</li>
+                <li>✅ Integração com Web3Manager</li>
+            </ul>
+            
+            <p><strong>🔄 Em desenvolvimento:</strong></p>
+            <ul>
+                <li>🔄 Compilação real do Solidity</li>
+                <li>🔄 Deploy real na blockchain</li>
+                <li>🔄 Verificação automática no explorer</li>
+                <li>🔄 Integração com redes testnet</li>
+            </ul>
+        </div>
+
+        <div class="demo-features">
+            <div class="demo-feature">
+                <h4>🎯 Validação de Formulário</h4>
+                <p>Teste a validação em tempo real dos campos do token.</p>
+            </div>
+            
+            <div class="demo-feature">
+                <h4>🔗 Conexão de Carteira</h4>
+                <p>Simula conexão com MetaMask (funciona sem carteira real).</p>
+            </div>
+            
+            <div class="demo-feature">
+                <h4>☕ Sufixo "cafe"</h4>
+                <p>Tokens criados no modo gratuito recebem sufixo automático.</p>
+            </div>
+            
+            <div class="demo-feature">
+                <h4>📱 Interface Responsiva</h4>
+                <p>Design otimizado para desktop e mobile.</p>
+            </div>
+        </div>
+
+        <div class="demo-actions">
+            <button class="demo-btn demo-btn-primary" onclick="testNotification('success')">
+                ✅ Teste Notificação Sucesso
+            </button>
+            <button class="demo-btn demo-btn-secondary" onclick="testNotification('error')">
+                ❌ Teste Notificação Erro
+            </button>
+            <button class="demo-btn demo-btn-primary" onclick="testValidation()">
+                🔍 Teste Validação
+            </button>
+            <button class="demo-btn demo-btn-secondary" onclick="testTokenPreview()">
+                👁️ Teste Preview
+            </button>
+        </div>
+
+        <div class="demo-results" id="demoResults">
+            <h4>Resultados dos Testes:</h4>
+            <p>Clique nos botões acima para testar as funcionalidades.</p>
+        </div>
+
+        <div style="text-align: center; margin: 3rem 0;">
+            <h3>🎯 Acesse o Modo Simples Completo</h3>
+            <a href="simple.html" class="demo-btn demo-btn-primary" style="text-decoration: none; display: inline-block;">
+                🚀 Ir para Modo Simples
+            </a>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script src="../assets/js/core/web3-manager.js"></script>
+    <script src="../assets/js/templates/basic-token.js"></script>
+    <script src="../assets/js/features/simple-interface.js"></script>
+
+    <script>
+        // Funções de demonstração
+        function testNotification(type) {
+            const messages = {
+                success: 'Token criado com sucesso! 🎉',
+                error: 'Erro ao conectar carteira: MetaMask não encontrada',
+                info: 'Preparando deploy do contrato...'
+            };
+            
+            showNotification(messages[type] || messages.info, type);
+            logResult(`Notificação ${type} exibida: "${messages[type]}"`);
+        }
+
+        function testValidation() {
+            // Simula validação
+            const mockErrors = [
+                'Nome deve ter pelo menos 2 caracteres',
+                'Símbolo deve conter apenas letras maiúsculas',
+                'Total supply deve ser um número positivo'
+            ];
+            
+            const errorContainer = document.createElement('div');
+            errorContainer.className = 'validation-errors';
+            errorContainer.innerHTML = `
+                <div>❌ Erros encontrados:</div>
+                ${mockErrors.map(error => `<div class="error-item">❌ ${error}</div>`).join('')}
+            `;
+            
+            const results = document.getElementById('demoResults');
+            results.appendChild(errorContainer);
+            
+            logResult('Validação testada com 3 erros simulados');
+        }
+
+        function testTokenPreview() {
+            const previewContainer = document.createElement('div');
+            previewContainer.id = 'tokenPreview';
+            previewContainer.innerHTML = `
+                <h4>Seu Token:</h4>
+                <div class="token-preview-item">
+                    <strong>Nome:</strong> Meu Token cafe
+                </div>
+                <div class="token-preview-item">
+                    <strong>Símbolo:</strong> MTKcafe
+                </div>
+                <div class="token-preview-item">
+                    <strong>Supply Total:</strong> 1,000,000
+                </div>
+                <div class="token-preview-item">
+                    <strong>Tipo:</strong> ERC-20 Básico
+                </div>
+                <div class="token-preview-note">
+                    <small>💡 Este token inclui o sufixo "cafe" por ser criado no modo gratuito</small>
+                </div>
+            `;
+            
+            const results = document.getElementById('demoResults');
+            results.appendChild(previewContainer);
+            
+            logResult('Preview do token exibido com sufixo "cafe"');
+        }
+
+        function showNotification(message, type = 'info') {
+            // Cria elemento de notificação
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <span>${message}</span>
+                <button onclick="this.parentElement.remove()">×</button>
+            `;
+            
+            // Adiciona ao container
+            let container = document.getElementById('notifications');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'notifications';
+                document.body.appendChild(container);
+            }
+            
+            container.appendChild(notification);
+            
+            // Remove automaticamente após 5 segundos
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        function logResult(message) {
+            const results = document.getElementById('demoResults');
+            const logEntry = document.createElement('div');
+            logEntry.style.marginBottom = '8px';
+            logEntry.innerHTML = `<strong>${new Date().toLocaleTimeString()}:</strong> ${message}`;
+            results.appendChild(logEntry);
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            logResult('Demo carregada - SmartContract.Cafe pronto para testes!');
+            
+            // Testa se o template está carregado
+            if (typeof window.BasicTokenTemplate !== 'undefined') {
+                logResult('✅ Template de token básico carregado com sucesso');
+            } else {
+                logResult('❌ Erro: Template de token não carregado');
+            }
+            
+            // Testa se o Web3Manager está disponível
+            if (typeof window.Web3Manager !== 'undefined') {
+                logResult('✅ Web3Manager carregado com sucesso');
+            } else {
+                logResult('❌ Erro: Web3Manager não carregado');
+            }
+            
+            // Testa se o SimpleTokenInterface está disponível
+            if (typeof window.SimpleTokenInterface !== 'undefined') {
+                logResult('✅ SimpleTokenInterface carregado com sucesso');
+            } else {
+                logResult('❌ Erro: SimpleTokenInterface não carregado');
+            }
+        });
+    </script>
+</body>
+</html>
