@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartContract.Cafe - Crie Tokens em 60 Segundos ☕</title>
+    <meta name="description" content="A plataforma mais simples e poderosa para criar tokens personalizados. Modo simples para iniciantes, modo avançado para profissionais.">
+    
+    <!-- Favicons com tema café -->
+    <link rel="icon" href="../assets/images/sccafe-32x32.png" sizes="32x32">
+    <link rel="icon" href="../assets/images/sccafe-16x16.png" sizes="16x16">
+    <link rel="apple-touch-icon" href="../assets/images/sccafe-192x192.png">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/landing.css">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="container">
+                <div class="nav-brand">
+                    <img src="../assets/images/logo-sccafe.png" alt="SmartContract.Cafe" class="logo">
+                    <span class="brand-text">SmartContract<span class="accent">.Cafe</span></span>
+                </div>
+                <div class="nav-menu">
+                    <a href="#features" class="nav-link">Recursos</a>
+                    <a href="#pricing" class="nav-link">Preços</a>
+                    <a href="#about" class="nav-link">Sobre</a>
+                    <button class="btn-connect" id="connect-wallet">
+                        🦊 Conectar Carteira
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        Crie Tokens <span class="gradient-text">Profissionais</span><br>
+                        em 60 Segundos ☕
+                    </h1>
+                    <p class="hero-subtitle">
+                        A única plataforma que combina simplicidade para iniciantes 
+                        com recursos avançados para profissionais. Todos os tokens 
+                        gratuitos levam nossa marca <strong>cafe</strong>!
+                    </p>
+                    <div class="hero-stats">
+                        <div class="stat">
+                            <span class="stat-number">5000+</span>
+                            <span class="stat-label">Tokens Criados</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">30+</span>
+                            <span class="stat-label">Blockchains</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">100%</span>
+                            <span class="stat-label">Verificação Automática</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-actions">
+                    <div class="mode-selector">
+                        <div class="mode-card simple-mode" onclick="window.location.href='simple.html'">
+                            <div class="mode-icon">🚀</div>
+                            <h3>Modo Simples</h3>
+                            <p>Para iniciantes<br>3 campos • 60 segundos</p>
+                            <div class="mode-features">
+                                <span>✅ Gratuito</span>
+                                <span>✅ Verificação automática</span>
+                                <span>✅ Sufixo "cafe"</span>
+                            </div>
+                            <button class="btn-mode">Começar Agora</button>
+                        </div>
+                        
+                        <div class="mode-card advanced-mode" onclick="window.location.href='advanced.html'">
+                            <div class="mode-icon">⚙️</div>
+                            <h3>Modo Avançado</h3>
+                            <p>Para profissionais<br>15+ recursos • Personalização</p>
+                            <div class="mode-features">
+                                <span>💎 Premium</span>
+                                <span>✅ CREATE2 personalizado</span>
+                                <span>✅ Marca customizada</span>
+                            </div>
+                            <button class="btn-mode premium">Explorar Pro</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">Por que SmartContract.Cafe?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">☕</div>
+                    <h3>Marca Café Exclusiva</h3>
+                    <p>Tokens gratuitos levam o sufixo "cafe" - uma marca de qualidade e confiança reconhecida pela comunidade.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>CREATE2 Personalizado</h3>
+                    <p>Único no mercado! Gere endereços com sufixos personalizados usando nossa tecnologia CREATE2 otimizada.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>OpenZeppelin Audited</h3>
+                    <p>Contratos baseados em OpenZeppelin - o padrão ouro da indústria, testados por milhões de dólares.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Verificação Automática</h3>
+                    <p>Todos os contratos são verificados automaticamente em 15+ exploradores com marca personalizada.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h3>30+ Blockchains</h3>
+                    <p>Ethereum, BSC, Polygon, Arbitrum, Optimism, Base, Avalanche e muito mais!</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Painel de Gestão</h3>
+                    <p>Gerencie todos os seus tokens em um painel único com ferramentas avançadas de administração.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Pronto para Criar seu Token?</h2>
+                <p>Junte-se a milhares de criadores que confiam na SmartContract.Cafe</p>
+                <div class="cta-buttons">
+                    <a href="simple.html" class="btn-cta primary">🚀 Modo Simples - Grátis</a>
+                    <a href="advanced.html" class="btn-cta secondary">⚙️ Modo Avançado - Pro</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="../assets/images/logo-sccafe.png" alt="SmartContract.Cafe" class="footer-logo">
+                    <p>A plataforma de criação de tokens mais amada do Brasil ☕</p>
+                </div>
+                <div class="footer-links">
+                    <div class="link-group">
+                        <h4>Produto</h4>
+                        <a href="simple.html">Modo Simples</a>
+                        <a href="advanced.html">Modo Avançado</a>
+                        <a href="dashboard.html">Painel</a>
+                    </div>
+                    <div class="link-group">
+                        <h4>Recursos</h4>
+                        <a href="#features">Funcionalidades</a>
+                        <a href="#pricing">Preços</a>
+                        <a href="docs/">Documentação</a>
+                    </div>
+                    <div class="link-group">
+                        <h4>Comunidade</h4>
+                        <a href="https://t.me/smartcontract_cafe" target="_blank">Telegram</a>
+                        <a href="https://twitter.com/sccafe" target="_blank">Twitter</a>
+                        <a href="mailto:contato@smartcontract.cafe">Contato</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 SmartContract.Cafe - Todos os direitos reservados</p>
+                <p>Feito com ☕ no Brasil</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../assets/js/core/web3-manager.js"></script>
+    <script src="../assets/js/ui/landing.js"></script>
+</body>
+</html>

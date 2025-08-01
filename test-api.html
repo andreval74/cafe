@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste da API de Compilação</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #cce7ff; color: #004085; }
+        button { padding: 10px 20px; margin: 10px 0; }
+        pre { background: #f5f5f5; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Teste da API de Compilação SCCAFE</h1>
+    
+    <button onclick="testApiConnection()">🔗 Testar Conexão com API</button>
+    <button onclick="testCompilation()">⚙️ Testar Compilação</button>
+    <button onclick="clearResults()">🗑️ Limpar Resultados</button>
+    
+    <div id="results"></div>
+
+    <script>
+        const API_URL = 'https://token-creator-api.onrender.com';
+        const resultsDiv = document.getElementById('results');
+
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong>: ${message}`;
+            resultsDiv.appendChild(div);
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+
+        function clearResults() {
+            resultsDiv.innerHTML = '';
+        }
+
+        async function testApiConnection() {
+            addResult('🔄 Testando conexão com a API...', 'info');
+            
+            try {
+                const response = await fetch(API_URL + '/health', {
+                    method: 'GET',
+                    timeout: 10000
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult('✅ API online: ' + JSON.stringify(data), 'success');
+                } else {
+                    addResult(`❌ API retornou erro ${response.status}: ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    addResult('⏰ Timeout: API não respondeu em 10 segundos', 'error');
+                } else {
+                    addResult('❌ Erro de conexão: ' + error.message, 'error');
+                }
+            }
+        }
+
+        async function testCompilation() {
+            addResult('🔄 Iniciando teste de compilação...', 'info');
+            
+            const testContract = `// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+contract TestToken {
+    string public name = "Test Token";
+    string public symbol = "TEST";
+    uint8 public decimals = 18;
+    uint256 public totalSupply = 1000000 * 10**18;
+    
+    mapping(address => uint256) public balanceOf;
+    address public owner;
+    
+    constructor() {
+        owner = msg.sender;
+        balanceOf[owner] = totalSupply;
+    }
+}`;
+
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+                const response = await fetch(API_URL + '/compile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        sourceCode: testContract,
+                        contractName: 'TestToken',
+                        compilerVersion: "0.8.19"
+                    }),
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    addResult(`❌ Erro HTTP ${response.status}: ${errorText}`, 'error');
+                    return;
+                }
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    addResult('✅ Compilação bem-sucedida!', 'success');
+                    addResult(`📋 ABI: ${result.abi ? 'Presente' : 'Ausente'}`, 'info');
+                    addResult(`💾 Bytecode: ${result.bytecode ? 'Presente (' + result.bytecode.length + ' chars)' : 'Ausente'}`, 'info');
+                    
+                    if (result.abi) {
+                        addResult('📄 ABI Preview:<pre>' + JSON.stringify(result.abi, null, 2).substring(0, 500) + '...</pre>', 'info');
+                    }
+                } else {
+                    addResult('❌ Compilação falhou: ' + (result.error || 'Erro desconhecido'), 'error');
+                    if (result.details) {
+                        addResult('📋 Detalhes: <pre>' + JSON.stringify(result.details, null, 2) + '</pre>', 'error');
+                    }
+                }
+
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    addResult('⏰ Timeout: Compilação demorou mais que 30 segundos', 'error');
+                } else {
+                    addResult('❌ Erro na compilação: ' + error.message, 'error');
+                }
+            }
+        }
+
+        // Teste automático ao carregar a página
+        window.onload = () => {
+            addResult('🚀 Página carregada. Clique nos botões para testar a API.', 'info');
+        };
+    </script>
+</body>
+</html>

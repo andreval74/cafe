@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Compilação Local</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #cce7ff; color: #004085; }
+        button { padding: 10px 20px; margin: 10px 0; }
+        pre { background: #f5f5f5; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Teste de Compilação Local SCCAFE</h1>
+    
+    <button onclick="testLocalCompilation()">⚙️ Testar Compilação Local</button>
+    <button onclick="clearResults()">🗑️ Limpar</button>
+    
+    <div id="results"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/solc@0.8.19/solc.min.js"></script>
+    <script>
+        const resultsDiv = document.getElementById('results');
+
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong>: ${message}`;
+            resultsDiv.appendChild(div);
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+
+        function clearResults() {
+            resultsDiv.innerHTML = '';
+        }
+
+        async function testLocalCompilation() {
+            addResult('🔄 Testando compilação local...', 'info');
+            
+            try {
+                // Verifica se o solc foi carregado
+                if (!window.solc) {
+                    throw new Error('Compilador Solidity não foi carregado');
+                }
+                
+                addResult('✅ Compilador Solidity carregado', 'success');
+                
+                const testContract = `// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+contract CafeToken {
+    string public name = "Cafe Token";
+    string public symbol = "CAFE";
+    uint8 public decimals = 18;
+    uint256 public totalSupply = 1000000 * 10**18;
+    
+    mapping(address => uint256) public balanceOf;
+    address public owner;
+    
+    event Transfer(address indexed from, address indexed to, uint256 value);
+    
+    constructor() {
+        owner = msg.sender;
+        balanceOf[owner] = totalSupply;
+        emit Transfer(address(0), owner, totalSupply);
+    }
+    
+    function transfer(address to, uint256 amount) public returns (bool) {
+        require(balanceOf[msg.sender] >= amount, "Insufficient balance");
+        balanceOf[msg.sender] -= amount;
+        balanceOf[to] += amount;
+        emit Transfer(msg.sender, to, amount);
+        return true;
+    }
+}`;
+
+                // Configuração do compilador
+                const input = {
+                    language: 'Solidity',
+                    sources: {
+                        'CafeToken.sol': {
+                            content: testContract
+                        }
+                    },
+                    settings: {
+                        outputSelection: {
+                            '*': {
+                                '*': ['abi', 'evm.bytecode']
+                            }
+                        },
+                        optimizer: {
+                            enabled: true,
+                            runs: 200
+                        }
+                    }
+                };
+
+                addResult('🔄 Compilando contrato...', 'info');
+                const startTime = Date.now();
+                
+                // Compila o contrato
+                const output = JSON.parse(window.solc.compile(JSON.stringify(input)));
+                
+                const endTime = Date.now();
+                const compilationTime = endTime - startTime;
+                
+                addResult(`⏱️ Compilação concluída em ${compilationTime}ms`, 'info');
+                
+                // Verifica erros de compilação
+                if (output.errors) {
+                    const fatalErrors = output.errors.filter(error => error.severity === 'error');
+                    if (fatalErrors.length > 0) {
+                        addResult('❌ Erros de compilação:', 'error');
+                        fatalErrors.forEach(error => {
+                            addResult(error.formattedMessage || error.message, 'error');
+                        });
+                        return;
+                    }
+                    
+                    // Mostra warnings se houver
+                    const warnings = output.errors.filter(error => error.severity === 'warning');
+                    if (warnings.length > 0) {
+                        addResult(`⚠️ ${warnings.length} warning(s) encontrado(s)`, 'info');
+                    }
+                }
+
+                // Extrai ABI e bytecode
+                const contractData = output.contracts['CafeToken.sol']['CafeToken'];
+                if (!contractData) {
+                    throw new Error('Contrato CafeToken não encontrado na saída da compilação');
+                }
+
+                const abi = contractData.abi;
+                const bytecode = '0x' + contractData.evm.bytecode.object;
+                
+                addResult('✅ Compilação bem-sucedida!', 'success');
+                addResult(`📄 ABI: ${abi.length} itens`, 'success');
+                addResult(`💾 Bytecode: ${bytecode.length} caracteres`, 'success');
+                
+                // Mostra preview da ABI
+                addResult('📋 Preview da ABI:<pre>' + JSON.stringify(abi, null, 2).substring(0, 800) + '...</pre>', 'info');
+                
+                // Verifica se o bytecode parece válido
+                if (bytecode.length > 100 && bytecode.startsWith('0x')) {
+                    addResult('✅ Bytecode parece válido', 'success');
+                } else {
+                    addResult('⚠️ Bytecode pode estar inválido', 'error');
+                }
+
+            } catch (error) {
+                addResult('❌ Erro na compilação local: ' + error.message, 'error');
+                console.error('Erro completo:', error);
+            }
+        }
+
+        // Teste automático ao carregar
+        window.onload = () => {
+            addResult('🚀 Página carregada. Clique no botão para testar a compilação local.', 'info');
+            
+            if (window.solc) {
+                addResult('✅ Compilador Solidity disponível', 'success');
+            } else {
+                addResult('⏳ Aguardando carregamento do compilador...', 'info');
+                setTimeout(() => {
+                    if (window.solc) {
+                        addResult('✅ Compilador Solidity carregado com sucesso', 'success');
+                    } else {
+                        addResult('❌ Compilador Solidity não foi carregado', 'error');
+                    }
+                }, 3000);
+            }
+        };
+    </script>
+</body>
+</html>
