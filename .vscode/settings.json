@@ -3,5 +3,6 @@
         "origin",
         "upstream",
         ""
-    ]
+    ],
+    "markdown.validate.enabled": true
 }
