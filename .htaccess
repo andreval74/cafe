@@ -5,3 +5,26 @@ RewriteRule ^favicon\.ico$ /imgs/sccafe-32x32.png [L]
 # Definir tipos MIME para ícones
 AddType image/x-icon .ico
 AddType image/png .png
+
+# Configurações de segurança para deploy
+<Files "deploy.log">
+    Order Allow,Deny
+    Allow from all
+    <RequireAll>
+        Require ip 127.0.0.1
+        Require ip ::1
+    </RequireAll>
+</Files>
+
+# Proteção de arquivos sensíveis
+<FilesMatch "\.(md|git|env)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Headers de segurança
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options DENY
+    Header always set X-XSS-Protection "1; mode=block"
+</IfModule>
